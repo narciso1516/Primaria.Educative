@@ -3,790 +3,131 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Plano Cartesiano Interactivo</title>
+<title>Plano Cartesiano Interactivo · Niveles y diagnóstico</title>
 <style>
-  :root{
-    --bg:#173961;
-    --panel:#17616E;
-    --panel2:#7697A0;
-    --text:#FFEDB0;
-    --muted:#D8E4E7;
-    --grid:rgba(118,151,160,.30);
-    --axis:#FFEDB0;
-    --accent:#FD8916;
-    --accent2:#FFEDB0;
-    --good:#7697A0;
-    --bad:#FD8916;
-    --shadow:0 18px 55px rgba(0,0,0,.28);
-  }
-
-  *{box-sizing:border-box}
-  html,body{margin:0;min-height:100%;background:
-    radial-gradient(circle at 20% 10%, rgba(253,137,22,.16), transparent 30%),
-    radial-gradient(circle at 85% 20%, rgba(255,237,176,.10), transparent 30%),
-    var(--bg);color:var(--text);
-    font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  }
-
-  body{padding:18px}
-  button{font:inherit}
-  .app{width:min(1180px,100%);margin:auto}
-  .hero{
-    display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;
-    margin-bottom:14px;
-  }
-  h1{font-size:clamp(1.45rem,3vw,2.25rem);margin:0 0 6px}
-  .subtitle{margin:0;color:var(--muted);font-size:.98rem}
-  .badge{
-    padding:10px 14px;border:1px solid rgba(255,255,255,.12);
-    background:rgba(255,255,255,.05);border-radius:999px;color:var(--accent2);
-    font-weight:800;white-space:nowrap
-  }
-
-  .layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px}
-  .card{
-    background:linear-gradient(180deg,rgba(16,47,76,.96),rgba(13,38,61,.96));
-    border:1px solid rgba(255,255,255,.09);
-    border-radius:24px;box-shadow:var(--shadow);
-  }
-  .board-card{padding:14px}
-  .side{padding:18px;display:flex;flex-direction:column;gap:14px}
-  .mission{
-    padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.055);
-    border:1px solid rgba(255,255,255,.08)
-  }
-  .mission small{display:block;color:var(--muted);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
-  .mission strong{display:block;font-size:1.45rem;margin-top:5px}
-  .progress-wrap{display:flex;gap:9px;align-items:center}
-  .progress{height:10px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;flex:1}
-  .bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .35s ease}
-  .counter{font-weight:800;font-size:.9rem;color:var(--muted)}
-
-  .board-wrap{
-    position:relative;width:100%;aspect-ratio:1/1;max-height:78vh;
-    border-radius:20px;overflow:hidden;
-    background:linear-gradient(180deg,rgba(23,57,97,.82),rgba(23,97,110,.62));
-    touch-action:none;
-  }
-  canvas{width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
-  .coord-pill{
-    position:absolute;left:12px;bottom:12px;z-index:3;
-    background:rgba(23,57,97,.92);border:1px solid rgba(255,255,255,.14);
-    backdrop-filter:blur(8px);border-radius:999px;padding:8px 12px;
-    font-weight:800;color:#fff;pointer-events:none;opacity:0;transform:translateY(5px);
-    transition:.18s ease
-  }
-  .coord-pill.show{opacity:1;transform:none}
-
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .btn{
-    border:0;border-radius:14px;padding:12px 14px;font-weight:900;
-    cursor:pointer;transition:transform .13s ease, box-shadow .13s ease, opacity .13s ease;
-  }
-  .btn:hover{transform:translateY(-1px)}
-  .btn:active{transform:scale(.98)}
-  .btn.primary{background:linear-gradient(135deg,var(--accent),#8de1ff);color:#173961;box-shadow:0 10px 25px rgba(253,137,22,.20)}
-  .btn.secondary{background:rgba(255,255,255,.08);color:var(--text);border:1px solid rgba(255,255,255,.08)}
-  .btn.good{background:linear-gradient(135deg,var(--good),#a6f6c7);color:#173961}
-  .btn.warn{background:linear-gradient(135deg,var(--accent2),#ffe7a3);color:#173961}
-  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
-
-  .info{
-    border-radius:18px;padding:14px;background:rgba(255,255,255,.045);
-    border:1px solid rgba(255,255,255,.07)
-  }
-  .info h3{margin:0 0 8px;font-size:1rem}
-  .info p{margin:5px 0;color:var(--muted);line-height:1.45}
-  .info b{color:var(--text)}
-  .feedback{
-    min-height:76px;border-radius:18px;padding:14px;border:1px solid rgba(255,255,255,.08);
-    background:rgba(255,255,255,.045);line-height:1.45
-  }
-  .feedback.good{border-color:rgba(118,151,160,.48);background:rgba(118,151,160,.12)}
-  .feedback.bad{border-color:rgba(253,137,22,.48);background:rgba(253,137,22,.10)}
-  .feedback strong{display:block;margin-bottom:3px}
-  .legend{display:flex;flex-wrap:wrap;gap:8px;font-size:.84rem;color:var(--muted)}
-  .chip{padding:7px 9px;border-radius:999px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.07)}
-  .footer-note{text-align:center;color:#7697A0;font-size:.8rem;margin-top:13px}
-
-  .pulse{
-    animation:pulse .55s ease;
-  }
-  @keyframes pulse{
-    0%{transform:scale(1)}
-    45%{transform:scale(1.018)}
-    100%{transform:scale(1)}
-  }
-  .shake{animation:shake .34s ease}
-  @keyframes shake{
-    0%,100%{transform:translateX(0)}
-    25%{transform:translateX(-6px)}
-    50%{transform:translateX(6px)}
-    75%{transform:translateX(-3px)}
-  }
-
-  .modal{
-    position:fixed;inset:0;background:rgba(2,12,21,.75);display:none;
-    align-items:center;justify-content:center;padding:20px;z-index:50;backdrop-filter:blur(8px)
-  }
-  .modal.show{display:flex}
-  .modal-box{width:min(520px,100%);padding:24px}
-  .modal h2{margin-top:0}
-  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}
-  .stat{padding:14px;border-radius:16px;background:rgba(255,255,255,.055);text-align:center}
-  .stat b{display:block;font-size:1.4rem}
-  .stat span{font-size:.8rem;color:var(--muted)}
-
-  @media (max-width:900px){
-    body{padding:10px}
-    .layout{grid-template-columns:1fr}
-    .side{order:-1}
-    .hero{grid-template-columns:1fr}
-    .badge{justify-self:start}
-    .board-wrap{max-height:none}
-  }
-  @media (max-width:540px){
-    .side,.board-card{padding:11px}
-    .row{grid-template-columns:1fr}
-    .mission strong{font-size:1.2rem}
-  }
-
-  /* Footer del autor: estilos aislados para no interferir con la página */
-  .lann-author-footer{
-    width:min(1180px,100%);
-    margin:18px auto 0;
-    color:var(--text);
-  }
-  .lann-author-footer__panel{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) auto;
-    gap:22px;
-    align-items:center;
-    padding:22px 24px;
-    border:1px solid rgba(255,237,176,.16);
-    border-radius:22px;
-    background:
-      linear-gradient(135deg,rgba(23,97,110,.82),rgba(23,57,97,.94));
-    box-shadow:0 14px 38px rgba(0,0,0,.20);
-  }
-  .lann-author-footer__content{
-    min-width:0;
-  }
-  .lann-author-footer__eyebrow{
-    margin:0 0 5px;
-    color:var(--accent);
-    font-size:.75rem;
-    font-weight:900;
-    letter-spacing:.12em;
-    text-transform:uppercase;
-  }
-  .lann-author-footer__name{
-    margin:0;
-    color:var(--text);
-    font-size:clamp(1.08rem,2vw,1.35rem);
-    line-height:1.25;
-  }
-  .lann-author-footer__description{
-    max-width:820px;
-    margin:9px 0 0;
-    color:var(--muted);
-    font-size:.92rem;
-    line-height:1.6;
-  }
-  .lann-author-footer__quote{
-    margin:10px 0 0;
-    color:rgba(255,237,176,.78);
-    font-size:.82rem;
-    font-style:italic;
-    line-height:1.45;
-  }
-  .lann-author-footer__actions{
-    display:flex;
-    flex-direction:column;
-    align-items:flex-end;
-    gap:10px;
-  }
-  .lann-author-footer__button{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-height:44px;
-    padding:11px 17px;
-    border:1px solid rgba(255,237,176,.20);
-    border-radius:14px;
-    background:var(--accent);
-    color:var(--bg);
-    font-size:.9rem;
-    font-weight:900;
-    line-height:1;
-    text-decoration:none;
-    box-shadow:0 9px 22px rgba(253,137,22,.18);
-    transition:transform .14s ease, box-shadow .14s ease, filter .14s ease;
-  }
-  .lann-author-footer__button:hover{
-    transform:translateY(-1px);
-    box-shadow:0 12px 26px rgba(253,137,22,.24);
-    filter:brightness(1.03);
-  }
-  .lann-author-footer__button:focus-visible{
-    outline:3px solid var(--accent2);
-    outline-offset:3px;
-  }
-  .lann-author-footer__copyright{
-    margin:0;
-    color:var(--panel2);
-    font-size:.76rem;
-    text-align:right;
-    white-space:nowrap;
-  }
-  @media (max-width:760px){
-    .lann-author-footer__panel{
-      grid-template-columns:1fr;
-      gap:16px;
-      padding:19px 18px;
-    }
-    .lann-author-footer__actions{
-      align-items:flex-start;
-    }
-    .lann-author-footer__copyright{
-      text-align:left;
-      white-space:normal;
-    }
-  }
-  @media (max-width:420px){
-    .lann-author-footer__panel{
-      padding:17px 15px;
-      border-radius:18px;
-    }
-    .lann-author-footer__button{
-      width:100%;
-    }
-    .lann-author-footer__actions{
-      width:100%;
-    }
-  }
-
+:root{
+  --bg:#173961; --panel:#17616E; --panel2:#7697A0; --text:#FFEDB0;
+  --muted:#D8E4E7; --grid:rgba(118,151,160,.30); --axis:#FFEDB0;
+  --accent:#FD8916; --accent2:#FFEDB0; --good:#92B8A7; --bad:#FD8916;
+  --shadow:0 18px 55px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:
+  radial-gradient(circle at 20% 10%,rgba(253,137,22,.16),transparent 30%),
+  radial-gradient(circle at 85% 20%,rgba(255,237,176,.10),transparent 30%),var(--bg);
+  color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{padding:18px} button,input{font:inherit}.app{width:min(1180px,100%);margin:auto}
+.hero{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;margin-bottom:14px}
+h1{font-size:clamp(1.45rem,3vw,2.25rem);margin:0 0 6px}.subtitle{margin:0;color:var(--muted);font-size:.98rem}
+.hero-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.badge{padding:9px 12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);border-radius:999px;color:var(--accent2);font-weight:800;white-space:nowrap}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:16px}.card{background:linear-gradient(180deg,rgba(23,97,110,.96),rgba(23,57,97,.96));border:1px solid rgba(255,255,255,.09);border-radius:24px;box-shadow:var(--shadow)}
+.board-card{padding:14px}.side{padding:18px;display:flex;flex-direction:column;gap:13px}.mission{padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08)}
+.mission small{display:block;color:var(--muted);font-weight:700;letter-spacing:.04em;text-transform:uppercase}.mission strong{display:block;font-size:1.28rem;margin-top:5px;line-height:1.3}.mission em{display:block;color:var(--muted);font-style:normal;margin-top:6px;font-size:.88rem}
+.progress-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.progress-wrap{display:flex;gap:9px;align-items:center}.progress{height:10px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;flex:1}.bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .35s ease}.counter{font-weight:800;font-size:.86rem;color:var(--muted);white-space:nowrap}.block-name{font-size:.78rem;color:var(--accent2);font-weight:900;text-transform:uppercase;letter-spacing:.05em}
+.board-wrap{position:relative;width:100%;aspect-ratio:1/1;max-height:78vh;border-radius:20px;overflow:hidden;background:linear-gradient(180deg,rgba(23,57,97,.82),rgba(23,97,110,.62));touch-action:none}
+canvas{width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}.coord-pill{position:absolute;left:12px;bottom:12px;z-index:3;background:rgba(23,57,97,.92);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(8px);border-radius:999px;padding:8px 12px;font-weight:800;color:#fff;pointer-events:none;opacity:0;transform:translateY(5px);transition:.18s ease}.coord-pill.show{opacity:1;transform:none}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{border:0;border-radius:14px;padding:12px 14px;font-weight:900;cursor:pointer;transition:transform .13s ease,box-shadow .13s ease,opacity .13s ease}.btn:hover{transform:translateY(-1px)}.btn:active{transform:scale(.98)}.btn.primary{background:linear-gradient(135deg,var(--accent),#ffad57);color:#173961;box-shadow:0 10px 25px rgba(253,137,22,.20)}.btn.secondary{background:rgba(255,255,255,.08);color:var(--text);border:1px solid rgba(255,255,255,.08)}.btn.good{background:linear-gradient(135deg,#9ec7b4,#d5eadf);color:#173961}.btn.warn{background:linear-gradient(135deg,var(--accent2),#ffe7a3);color:#173961}.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.info,.feedback,.timer-card,.choice-box{border-radius:18px;padding:13px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07)}.feedback{min-height:72px;line-height:1.42}.feedback.good{border-color:rgba(146,184,167,.55);background:rgba(146,184,167,.12)}.feedback.bad{border-color:rgba(253,137,22,.55);background:rgba(253,137,22,.10)}.feedback strong{display:block;margin-bottom:3px}.info h3,.choice-box h3{margin:0 0 8px;font-size:1rem}.info p{margin:5px 0;color:var(--muted);line-height:1.4}.info b{color:var(--text)}
+.timer-card{display:flex;justify-content:space-between;gap:10px;align-items:center;color:var(--muted);font-size:.86rem}.timer-card b{color:var(--text)}.choices{display:grid;gap:8px}.choice{width:100%;text-align:left;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.06);color:var(--text);border-radius:12px;padding:10px 12px;font-weight:800;cursor:pointer}.choice.selected{outline:2px solid var(--accent);background:rgba(253,137,22,.12)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;font-size:.82rem;color:var(--muted)}.chip{padding:7px 9px;border-radius:999px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.07)}.footer-note{text-align:center;color:#7697A0;font-size:.8rem;margin-top:13px}.hidden{display:none!important}.pulse{animation:pulse .55s ease}@keyframes pulse{0%{transform:scale(1)}45%{transform:scale(1.018)}100%{transform:scale(1)}}.shake{animation:shake .34s ease}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+.modal{position:fixed;inset:0;background:rgba(2,12,21,.78);display:none;align-items:center;justify-content:center;padding:20px;z-index:50;backdrop-filter:blur(8px);overflow:auto}.modal.show{display:flex}.modal-box{width:min(860px,100%);padding:24px;max-height:92vh;overflow:auto}.modal h2{margin-top:0}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.stat{padding:14px;border-radius:16px;background:rgba(255,255,255,.055);text-align:center}.stat b{display:block;font-size:1.35rem}.stat span{font-size:.8rem;color:var(--muted)}.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.report-panel{padding:15px;border-radius:16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07)}.report-panel h3{margin:0 0 10px;font-size:1rem}.skill-row{display:grid;grid-template-columns:1fr 70px;gap:10px;align-items:center;margin:8px 0;color:var(--muted)}.skill-row b{text-align:right;color:var(--text)}.recommendation{padding:14px;border-radius:16px;background:rgba(253,137,22,.10);border:1px solid rgba(253,137,22,.30);line-height:1.45;margin:14px 0}.block-complete{width:min(560px,100%)}
+/* Footer del autor: estilos aislados */
+.lann-author-footer{width:min(1180px,100%);margin:18px auto 0;color:var(--text)}.lann-author-footer__panel{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:22px;align-items:center;padding:22px 24px;border:1px solid rgba(255,237,176,.16);border-radius:22px;background:linear-gradient(135deg,rgba(23,97,110,.82),rgba(23,57,97,.94));box-shadow:0 14px 38px rgba(0,0,0,.20)}.lann-author-footer__eyebrow{margin:0 0 5px;color:var(--accent);font-size:.75rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.lann-author-footer__name{margin:0;color:var(--text);font-size:clamp(1.08rem,2vw,1.35rem)}.lann-author-footer__description{max-width:820px;margin:9px 0 0;color:var(--muted);font-size:.92rem;line-height:1.6}.lann-author-footer__quote{margin:10px 0 0;color:rgba(255,237,176,.78);font-size:.82rem;font-style:italic}.lann-author-footer__actions{display:flex;flex-direction:column;align-items:flex-end;gap:10px}.lann-author-footer__button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:11px 17px;border:1px solid rgba(255,237,176,.20);border-radius:14px;background:var(--accent);color:var(--bg);font-size:.9rem;font-weight:900;text-decoration:none}.lann-author-footer__copyright{margin:0;color:var(--panel2);font-size:.76rem;text-align:right}
+@media(max-width:900px){body{padding:10px}.layout{grid-template-columns:1fr}.side{order:-1}.hero{grid-template-columns:1fr}.hero-actions{justify-content:flex-start}.board-wrap{max-height:none}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){.report-grid{grid-template-columns:1fr}.lann-author-footer__panel{grid-template-columns:1fr}.lann-author-footer__actions{align-items:flex-start}.lann-author-footer__copyright{text-align:left}}
+@media(max-width:540px){.side,.board-card{padding:11px}.row{grid-template-columns:1fr}.mission strong{font-size:1.12rem}.stats{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 <div class="app">
-  <header class="hero">
-    <div>
-      <h1>Plano Cartesiano Interactivo</h1>
-      <p class="subtitle">Aprende coordenadas colocando puntos en los cuatro cuadrantes.</p>
-    </div>
-    <div class="badge" id="modeBadge">Modo: Misiones</div>
-  </header>
-
-  <main class="layout">
-    <section class="card board-card">
-      <div class="board-wrap" id="boardWrap">
-        <canvas id="plane" aria-label="Plano cartesiano interactivo"></canvas>
-        <div class="coord-pill" id="coordPill">x = 0 · y = 0</div>
-      </div>
-    </section>
-
-    <aside class="card side">
-      <div class="progress-wrap">
-        <div class="progress"><div class="bar" id="progressBar"></div></div>
-        <div class="counter" id="counter">1/16</div>
-      </div>
-
-      <div class="mission" id="missionBox">
-        <small>Misión actual</small>
-        <strong id="missionText">Coloca A(4, 3)</strong>
-      </div>
-
-      <div class="row">
-        <button class="btn secondary" id="missionModeBtn">🎯 Misiones</button>
-        <button class="btn secondary" id="freeModeBtn">🧭 Explorar</button>
-      </div>
-
-      <div class="feedback" id="feedback">
-        <strong>¿Cómo resolver?</strong>
-        Primero ubica <b>X</b> en horizontal y después <b>Y</b> en vertical. Toca o arrastra el punto.
-      </div>
-
-      <div class="info">
-        <h3>Lectura del punto</h3>
-        <p id="readX"><b>X = —</b></p>
-        <p id="readY"><b>Y = —</b></p>
-        <p id="readQ"><b>Cuadrante = —</b></p>
-      </div>
-
-      <div class="row">
-        <button class="btn secondary" id="clearBtn">Borrar punto</button>
-        <button class="btn primary" id="checkBtn">Comprobar</button>
-      </div>
-
-      <button class="btn warn" id="hintBtn">💡 Mostrar pista X → Y</button>
-
-      <div class="legend">
-        <span class="chip">X: izquierda / derecha</span>
-        <span class="chip">Y: abajo / arriba</span>
-        <span class="chip">Origen: (0,0)</span>
-      </div>
-    </aside>
-  </main>
-  <div class="footer-note">Actividad educativa · Selecciona intersecciones exactas de la cuadrícula.</div>
+<header class="hero">
+  <div><h1>Plano Cartesiano Interactivo</h1><p class="subtitle">96 retos progresivos: fundamentos, interpretación, geometría y razonamiento.</p></div>
+  <div class="hero-actions"><div class="badge" id="modeBadge">Modo: Misiones</div><div class="badge" id="globalBadge">Nivel 1 de 6</div></div>
+</header>
+<main class="layout">
+  <section class="card board-card"><div class="board-wrap" id="boardWrap"><canvas id="plane" aria-label="Plano cartesiano interactivo"></canvas><div class="coord-pill" id="coordPill">x = 0 · y = 0</div></div></section>
+  <aside class="card side">
+    <div class="progress-head"><span class="block-name" id="blockName">Bloque 1 · Fundamentos</span><span class="counter" id="counter">1/16 · 1/96</span></div>
+    <div class="progress-wrap"><div class="progress"><div class="bar" id="progressBar"></div></div></div>
+    <div class="mission" id="missionBox"><small>Misión actual</small><strong id="missionText">Coloca A(3, 2)</strong><em id="missionHelp">Primero X, después Y.</em></div>
+    <div class="row"><button class="btn secondary" id="missionModeBtn">🎯 Misiones</button><button class="btn secondary" id="freeModeBtn">🧭 Explorar</button></div>
+    <div class="timer-card"><span>⏱ Tiempo total: <b id="totalTime">00:00</b></span><span>Pregunta: <b id="questionTime">00:00</b></span></div>
+    <div class="feedback" id="feedback"><strong>¿Cómo resolver?</strong>Primero ubica <b>X</b> en horizontal y después <b>Y</b> en vertical.</div>
+    <div class="choice-box hidden" id="choiceBox"><h3>Selecciona una respuesta</h3><div class="choices" id="choices"></div></div>
+    <div class="info" id="pointInfo"><h3>Lectura del punto</h3><p id="readX"><b>X = —</b></p><p id="readY"><b>Y = —</b></p><p id="readQ"><b>Cuadrante = —</b></p></div>
+    <div class="row"><button class="btn secondary" id="clearBtn">Borrar punto</button><button class="btn primary" id="checkBtn">Comprobar</button></div>
+    <button class="btn warn" id="hintBtn">💡 Mostrar pista</button>
+    <div class="legend"><span class="chip">X: izquierda / derecha</span><span class="chip">Y: abajo / arriba</span><span class="chip">Origen: (0,0)</span></div>
+  </aside>
+</main>
+<div class="footer-note">Actividad educativa adaptativa · El sistema registra tiempo, intentos, pistas y tipos de error.</div>
 </div>
-
-
-<footer class="lann-author-footer" aria-labelledby="lann-author-footer-title">
-  <div class="lann-author-footer__panel">
-    <div class="lann-author-footer__content">
-      <p class="lann-author-footer__eyebrow">Autor</p>
-      <h2 class="lann-author-footer__name" id="lann-author-footer-title">Luis Alberto Antonio Narciso</h2>
-      <p class="lann-author-footer__description">
-        Ingeniero en Electrónica y profesional de Quality Assurance, automatización de pruebas y tecnología educativa.
-        Desarrolla experiencias web interactivas orientadas al aprendizaje, combinando educación, tecnología, diseño y herramientas digitales.
-      </p>
-      <p class="lann-author-footer__quote">“Recurso diseñado y desarrollado por Luis Alberto Antonio Narciso”.</p>
-    </div>
-    <div class="lann-author-footer__actions">
-      <a
-        class="lann-author-footer__button"
-        href="https://narciso1516.github.io/narcisotesting.com/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >Conocer al autor</a>
-      <p class="lann-author-footer__copyright">© 2026 Luis Alberto Antonio Narciso</p>
-    </div>
-  </div>
-</footer>
-
-<div class="modal" id="finalModal">
-  <div class="card modal-box">
-    <h2>¡Actividad terminada!</h2>
-    <p>Este es tu reporte de práctica en el plano cartesiano.</p>
-    <div class="stats">
-      <div class="stat"><b id="statOk">0</b><span>Correctas</span></div>
-      <div class="stat"><b id="statBad">0</b><span>Errores</span></div>
-      <div class="stat"><b id="statPct">0%</b><span>Precisión</span></div>
-    </div>
-    <button class="btn good" id="restartBtn" style="width:100%">Repetir actividad</button>
-  </div>
-</div>
-
+<footer class="lann-author-footer" aria-labelledby="lann-author-footer-title"><div class="lann-author-footer__panel"><div><p class="lann-author-footer__eyebrow">Autor</p><h2 class="lann-author-footer__name" id="lann-author-footer-title">Luis Alberto Antonio Narciso</h2><p class="lann-author-footer__description">Ingeniero en Electrónica y profesional de Quality Assurance, automatización de pruebas y tecnología educativa. Desarrolla experiencias web interactivas orientadas al aprendizaje, combinando educación, tecnología, diseño y herramientas digitales.</p><p class="lann-author-footer__quote">“Recurso diseñado y desarrollado por Luis Alberto Antonio Narciso”.</p></div><div class="lann-author-footer__actions"><a class="lann-author-footer__button" href="https://narciso1516.github.io/narcisotesting.com/" target="_blank" rel="noopener noreferrer">Conocer al autor</a><p class="lann-author-footer__copyright">© 2026 Luis Alberto Antonio Narciso</p></div></div></footer>
+<div class="modal" id="blockModal"><div class="card modal-box block-complete"><h2 id="blockModalTitle">Bloque completado</h2><p id="blockModalText"></p><div class="stats"><div class="stat"><b id="blockOk">0</b><span>Correctas</span></div><div class="stat"><b id="blockErrors">0</b><span>Errores</span></div><div class="stat"><b id="blockHints">0</b><span>Pistas</span></div><div class="stat"><b id="blockTime">00:00</b><span>Tiempo</span></div></div><button class="btn primary" id="nextBlockBtn" style="width:100%">Continuar al siguiente nivel</button></div></div>
+<div class="modal" id="finalModal"><div class="card modal-box"><h2>Reporte final de desempeño</h2><p>El reporte considera precisión, intentos, pistas, tiempo y tipos de error.</p><div class="stats"><div class="stat"><b id="statOk">0</b><span>Correctas</span></div><div class="stat"><b id="statBad">0</b><span>Errores</span></div><div class="stat"><b id="statPct">0%</b><span>Precisión</span></div><div class="stat"><b id="statTime">00:00</b><span>Tiempo total</span></div></div><div class="report-grid"><div class="report-panel"><h3>Habilidades</h3><div id="skillsReport"></div></div><div class="report-panel"><h3>Tipos de error</h3><div id="errorsReport"></div></div></div><div class="recommendation" id="recommendation"></div><div class="row"><button class="btn warn" id="retryErrorsBtn">Repetir mis errores</button><button class="btn good" id="restartBtn">Reiniciar los 6 bloques</button></div></div></div>
 <script>
-(() => {
-  const canvas = document.getElementById('plane');
-  const ctx = canvas.getContext('2d');
-  const wrap = document.getElementById('boardWrap');
-  const coordPill = document.getElementById('coordPill');
-
-  const missionText = document.getElementById('missionText');
-  const missionBox = document.getElementById('missionBox');
-  const feedback = document.getElementById('feedback');
-  const progressBar = document.getElementById('progressBar');
-  const counter = document.getElementById('counter');
-  const modeBadge = document.getElementById('modeBadge');
-  const checkBtn = document.getElementById('checkBtn');
-  const clearBtn = document.getElementById('clearBtn');
-  const hintBtn = document.getElementById('hintBtn');
-  const freeModeBtn = document.getElementById('freeModeBtn');
-  const missionModeBtn = document.getElementById('missionModeBtn');
-  const readX = document.getElementById('readX');
-  const readY = document.getElementById('readY');
-  const readQ = document.getElementById('readQ');
-  const finalModal = document.getElementById('finalModal');
-  const restartBtn = document.getElementById('restartBtn');
-
-  const min = -10, max = 10;
-  let W=800, H=800, pad=58, step=34.2;
-  let selected = null;
-  let hover = null;
-  let dragging = false;
-  let mode = 'missions';
-  let current = 0;
-  let correct = 0;
-  let errors = 0;
-  let hintOn = false;
-  let resultPulse = 0;
-
-  const missions = [
-    {name:'A',x:3,y:2},
-    {name:'B',x:6,y:5},
-    {name:'C',x:-4,y:3},
-    {name:'D',x:-7,y:6},
-    {name:'E',x:-5,y:-3},
-    {name:'F',x:-2,y:-7},
-    {name:'G',x:4,y:-5},
-    {name:'H',x:8,y:-2},
-    {name:'I',x:0,y:6},
-    {name:'J',x:-6,y:0},
-    {name:'K',x:5,y:0},
-    {name:'L',x:0,y:-5},
-    {name:'M',x:1,y:9},
-    {name:'N',x:-9,y:1},
-    {name:'O',x:-8,y:-8},
-    {name:'P',x:7,y:-7}
-  ];
-
-  function resize(){
-    const r = wrap.getBoundingClientRect();
-    const dpr = Math.max(1, Math.min(2, devicePixelRatio || 1));
-    W = Math.floor(r.width);
-    H = Math.floor(r.height);
-    canvas.width = Math.floor(W*dpr);
-    canvas.height = Math.floor(H*dpr);
-    canvas.style.width=W+'px';
-    canvas.style.height=H+'px';
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-    pad = Math.max(38, Math.min(62, W*.075));
-    step = (W - pad*2)/(max-min);
-    draw();
-  }
-
-  function gx(x){ return pad + (x-min)*step; }
-  function gy(y){ return H-pad - (y-min)*step; }
-
-  function toGrid(px,py){
-    let x = Math.round(min + (px-pad)/step);
-    let y = Math.round(min + ((H-pad)-py)/step);
-    x = Math.max(min,Math.min(max,x));
-    y = Math.max(min,Math.min(max,y));
-    return {x,y};
-  }
-
-  function roundedRect(x,y,w,h,r){
-    const rr=Math.min(r,w/2,h/2);
-    ctx.beginPath();
-    ctx.moveTo(x+rr,y);
-    ctx.arcTo(x+w,y,x+w,y+h,rr);
-    ctx.arcTo(x+w,y+h,x,y+h,rr);
-    ctx.arcTo(x,y+h,x,y,rr);
-    ctx.arcTo(x,y,x+w,y,rr);
-    ctx.closePath();
-  }
-
-  function draw(){
-    ctx.clearRect(0,0,W,H);
-
-    // quadrant washes
-    const ox=gx(0), oy=gy(0);
-    ctx.fillStyle='rgba(23,97,110,.10)';
-    ctx.fillRect(ox,pad,W-pad-ox,oy-pad);
-    ctx.fillStyle='rgba(255,237,176,.08)';
-    ctx.fillRect(pad,pad,ox-pad,oy-pad);
-    ctx.fillStyle='rgba(118,151,160,.08)';
-    ctx.fillRect(pad,oy,ox-pad,H-pad-oy);
-    ctx.fillStyle='rgba(253,137,22,.06)';
-    ctx.fillRect(ox,oy,W-pad-ox,H-pad-oy);
-
-    // hover crosshair
-    if(hover){
-      ctx.save();
-      ctx.strokeStyle='rgba(253,137,22,.35)';
-      ctx.lineWidth=2;
-      ctx.setLineDash([6,7]);
-      ctx.beginPath(); ctx.moveTo(gx(hover.x),pad); ctx.lineTo(gx(hover.x),H-pad); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(pad,gy(hover.y)); ctx.lineTo(W-pad,gy(hover.y)); ctx.stroke();
-      ctx.restore();
-    }
-
-    // grid
-    ctx.lineWidth=1;
-    for(let i=min;i<=max;i++){
-      const x=gx(i), y=gy(i);
-      ctx.strokeStyle = i===0 ? 'rgba(255,255,255,.92)' : 'rgba(118,151,160,.24)';
-      ctx.lineWidth = i===0 ? 2.3 : 1;
-      ctx.beginPath();ctx.moveTo(x,pad);ctx.lineTo(x,H-pad);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(W-pad,y);ctx.stroke();
-    }
-
-    // arrows
-    ctx.fillStyle='rgba(255,255,255,.95)';
-    drawArrow(gx(max)+13,gy(0),0);
-    drawArrow(gx(min)-13,gy(0),Math.PI);
-    drawArrow(gx(0),gy(max)-13,-Math.PI/2);
-    drawArrow(gx(0),gy(min)+13,Math.PI/2);
-
-    // numbers
-    ctx.font=`${Math.max(10,Math.min(13,W/55))}px system-ui`;
-    ctx.textAlign='center';
-    ctx.textBaseline='top';
-    for(let i=min;i<=max;i++){
-      if(i===0) continue;
-      ctx.fillStyle='rgba(238,248,255,.76)';
-      ctx.fillText(i,gx(i),gy(0)+7);
-    }
-    ctx.textAlign='right';
-    ctx.textBaseline='middle';
-    for(let i=min;i<=max;i++){
-      if(i===0) continue;
-      ctx.fillStyle='rgba(238,248,255,.76)';
-      ctx.fillText(i,gx(0)-8,gy(i));
-    }
-
-    // origin
-    ctx.fillStyle='#FFEDB0';
-    ctx.beginPath();ctx.arc(gx(0),gy(0),4.5,0,Math.PI*2);ctx.fill();
-    ctx.font='800 12px system-ui'; ctx.textAlign='left';ctx.textBaseline='bottom';
-    ctx.fillText('O (0,0)',gx(0)+8,gy(0)-7);
-
-    // quadrant labels
-    const qFont=Math.max(11,Math.min(15,W/42));
-    ctx.font=`900 ${qFont}px system-ui`;ctx.fillStyle='rgba(255,255,255,.25)';
-    ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText('II',(pad+ox)/2,(pad+oy)/2);
-    ctx.fillText('I',(ox+W-pad)/2,(pad+oy)/2);
-    ctx.fillText('III',(pad+ox)/2,(oy+H-pad)/2);
-    ctx.fillText('IV',(ox+W-pad)/2,(oy+H-pad)/2);
-
-    // cardinal directions
-    ctx.font=`800 ${Math.max(10,Math.min(13,W/50))}px system-ui`;
-    ctx.fillStyle='rgba(253,137,22,.95)';
-    ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillText('NORTE',gx(0),pad-19);
-    ctx.textBaseline='top';ctx.fillText('SUR',gx(0),H-pad+18);
-    ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillText('OESTE',pad-18,gy(0));
-    ctx.textAlign='left';ctx.fillText('ESTE',W-pad+18,gy(0));
-
-    // hint path from origin
-    if(hintOn && mode==='missions'){
-      const m=missions[current];
-      ctx.save();
-      ctx.lineWidth=4;
-      ctx.strokeStyle='rgba(253,137,22,.84)';
-      ctx.setLineDash([9,7]);
-      ctx.beginPath();
-      ctx.moveTo(gx(0),gy(0));
-      ctx.lineTo(gx(m.x),gy(0));
-      ctx.lineTo(gx(m.x),gy(m.y));
-      ctx.stroke();
-      ctx.restore();
-      drawHintMarker(gx(m.x),gy(0),'X');
-      drawHintMarker(gx(m.x),gy(m.y),'Y');
-    }
-
-    if(selected){
-      // guide lines
-      ctx.save();
-      ctx.strokeStyle='rgba(23,97,110,.70)';
-      ctx.setLineDash([5,5]);ctx.lineWidth=2;
-      ctx.beginPath();ctx.moveTo(gx(selected.x),gy(0));ctx.lineTo(gx(selected.x),gy(selected.y));ctx.stroke();
-      ctx.beginPath();ctx.moveTo(gx(0),gy(selected.y));ctx.lineTo(gx(selected.x),gy(selected.y));ctx.stroke();
-      ctx.restore();
-
-      // point glow
-      const px=gx(selected.x),py=gy(selected.y);
-      const pulse = resultPulse ? 1 + .18*Math.sin(performance.now()/80) : 1;
-      ctx.save();
-      ctx.shadowBlur=22;ctx.shadowColor='#FD8916';
-      ctx.fillStyle='#FD8916';
-      ctx.beginPath();ctx.arc(px,py,8*pulse,0,Math.PI*2);ctx.fill();
-      ctx.restore();
-
-      // point label
-      const label = mode==='missions' ? missions[current].name : 'P';
-      const txt=`${label}(${selected.x}, ${selected.y})`;
-      ctx.font='900 13px system-ui';
-      const tw=ctx.measureText(txt).width+18;
-      const lx=Math.min(W-pad-tw,Math.max(pad,px+12));
-      const ly=Math.max(pad,py-34);
-      ctx.fillStyle='rgba(23,57,97,.94)';
-      roundedRect(lx,ly,tw,25,8);ctx.fill();
-      ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillText(txt,lx+tw/2,ly+12.5);
-    }
-  }
-
-  function drawArrow(x,y,ang){
-    ctx.save();ctx.translate(x,y);ctx.rotate(ang);
-    ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(-10,-6);ctx.lineTo(-10,6);ctx.closePath();ctx.fill();ctx.restore();
-  }
-
-  function drawHintMarker(x,y,label){
-    ctx.fillStyle='rgba(253,137,22,.98)';
-    ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#173961';ctx.font='900 10px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(label,x,y+.5);
-  }
-
-  function quadrant(x,y){
-    if(x===0 && y===0) return 'Origen';
-    if(x===0) return 'Sobre el eje Y';
-    if(y===0) return 'Sobre el eje X';
-    if(x>0&&y>0) return 'I';
-    if(x<0&&y>0) return 'II';
-    if(x<0&&y<0) return 'III';
-    return 'IV';
-  }
-
-  function updateReadout(){
-    if(!selected){
-      readX.innerHTML='<b>X = —</b>';
-      readY.innerHTML='<b>Y = —</b>';
-      readQ.innerHTML='<b>Cuadrante = —</b>';
-      return;
-    }
-    const xDir = selected.x<0?'izquierda':selected.x>0?'derecha':'origen';
-    const yDir = selected.y<0?'abajo':selected.y>0?'arriba':'origen';
-    readX.innerHTML=`<b>X = ${selected.x}</b> → ${xDir}`;
-    readY.innerHTML=`<b>Y = ${selected.y}</b> → ${yDir}`;
-    readQ.innerHTML=`<b>Cuadrante = ${quadrant(selected.x,selected.y)}</b>`;
-  }
-
-  function selectPoint(g){
-    selected={x:g.x,y:g.y};
-    coordPill.textContent=`x = ${g.x} · y = ${g.y}`;
-    coordPill.classList.add('show');
-    updateReadout();
-    if(mode==='free'){
-      feedback.className='feedback';
-      feedback.innerHTML=`<strong>Exploración</strong>Has colocado P(${g.x}, ${g.y}). Está en <b>${quadrant(g.x,g.y)}</b>.`;
-    }
-    draw();
-  }
-
-  function eventPoint(e){
-    const r=canvas.getBoundingClientRect();
-    const p=e.touches?e.touches[0]:e;
-    return {px:p.clientX-r.left,py:p.clientY-r.top};
-  }
-
-  function onMove(e){
-    const {px,py}=eventPoint(e);
-    if(px<pad-step*.45||px>W-pad+step*.45||py<pad-step*.45||py>H-pad+step*.45){
-      hover=null;draw();return;
-    }
-    hover=toGrid(px,py);
-    coordPill.textContent=`x = ${hover.x} · y = ${hover.y}`;
-    coordPill.classList.add('show');
-    if(dragging) selectPoint(hover);
-    else draw();
-  }
-
-  canvas.addEventListener('pointerdown',e=>{
-    dragging=true;
-    canvas.setPointerCapture?.(e.pointerId);
-    const r=canvas.getBoundingClientRect();
-    const g=toGrid(e.clientX-r.left,e.clientY-r.top);
-    selectPoint(g);
-  });
-  canvas.addEventListener('pointermove',onMove);
-  canvas.addEventListener('pointerup',()=>dragging=false);
-  canvas.addEventListener('pointercancel',()=>dragging=false);
-  canvas.addEventListener('pointerleave',()=>{dragging=false;hover=null;if(!selected)coordPill.classList.remove('show');draw();});
-
-  function updateMission(){
-    const m=missions[current];
-    missionText.textContent=`Coloca ${m.name}(${m.x}, ${m.y})`;
-    counter.textContent=`${current+1}/${missions.length}`;
-    progressBar.style.width=`${current/missions.length*100}%`;
-    selected=null;hintOn=false;coordPill.classList.remove('show');
-    feedback.className='feedback';
-    feedback.innerHTML='<strong>Tu turno</strong>Primero desplázate en <b>X</b> y después en <b>Y</b>.';
-    updateReadout();draw();
-  }
-
-  function signHint(target, actual, axis){
-    if(target===actual) return '';
-    if(axis==='X'){
-      if(target>0 && actual<0) return 'X debe estar a la <b>derecha</b> del origen.';
-      if(target<0 && actual>0) return 'X debe estar a la <b>izquierda</b> del origen.';
-      return `Revisa el desplazamiento horizontal: X debe ser <b>${target}</b>.`;
-    }
-    if(target>0 && actual<0) return 'Y debe estar <b>arriba</b> del origen.';
-    if(target<0 && actual>0) return 'Y debe estar <b>abajo</b> del origen.';
-    return `Revisa el desplazamiento vertical: Y debe ser <b>${target}</b>.`;
-  }
-
-  checkBtn.addEventListener('click',()=>{
-    if(mode==='free'){
-      feedback.className='feedback';
-      feedback.innerHTML='<strong>Modo explorar</strong>Aquí no hay respuestas incorrectas. Toca cualquier coordenada y observa cómo cambia su lectura.';
-      return;
-    }
-    if(!selected){
-      feedback.className='feedback bad shake';
-      feedback.innerHTML='<strong>Falta colocar el punto</strong>Toca una intersección de la cuadrícula antes de comprobar.';
-      setTimeout(()=>feedback.classList.remove('shake'),350);
-      return;
-    }
-    const m=missions[current];
-    if(selected.x===m.x && selected.y===m.y){
-      correct++;
-      resultPulse=1;
-      feedback.className='feedback good pulse';
-      feedback.innerHTML=`<strong>✓ Correcto</strong>${m.name} está en <b>(${m.x}, ${m.y})</b>, ${quadrant(m.x,m.y)==='I'||quadrant(m.x,m.y)==='II'||quadrant(m.x,m.y)==='III'||quadrant(m.x,m.y)==='IV'?'cuadrante <b>'+quadrant(m.x,m.y)+'</b>':quadrant(m.x,m.y)+'.'}`;
-      progressBar.style.width=`${(current+1)/missions.length*100}%`;
-      draw();
-      setTimeout(()=>{
-        resultPulse=0;
-        if(current < missions.length-1){
-          current++; updateMission();
-        }else{
-          showFinal();
-        }
-      },850);
-    }else{
-      errors++;
-      feedback.className='feedback bad shake';
-      const hx=signHint(m.x,selected.x,'X');
-      const hy=signHint(m.y,selected.y,'Y');
-      feedback.innerHTML=`<strong>Inténtalo de nuevo</strong>Estás en <b>(${selected.x}, ${selected.y})</b>. ${hx || hy}`;
-      hintOn=true;
-      setTimeout(()=>feedback.classList.remove('shake'),350);
-      draw();
-    }
-  });
-
-  clearBtn.addEventListener('click',()=>{
-    selected=null;hintOn=false;coordPill.classList.remove('show');updateReadout();draw();
-  });
-
-  hintBtn.addEventListener('click',()=>{
-    if(mode==='free'){
-      feedback.className='feedback';
-      feedback.innerHTML='<strong>Pista</strong>Derecha = X positiva · Izquierda = X negativa · Arriba = Y positiva · Abajo = Y negativa.';
-      return;
-    }
-    hintOn=!hintOn;
-    feedback.className='feedback';
-    feedback.innerHTML=hintOn
-      ? '<strong>Ruta X → Y</strong>Sigue primero la línea horizontal desde el origen y después la vertical.'
-      : '<strong>Pista oculta</strong>Ahora inténtalo sin la ruta.';
-    draw();
-  });
-
-  freeModeBtn.addEventListener('click',()=>{
-    mode='free';selected=null;hintOn=false;
-    modeBadge.textContent='Modo: Explorar';
-    missionText.textContent='Toca cualquier coordenada';
-    counter.textContent='Libre';
-    progressBar.style.width='100%';
-    checkBtn.textContent='Leer punto';
-    feedback.className='feedback';
-    feedback.innerHTML='<strong>Exploración libre</strong>Toca o arrastra por el plano. Verás X, Y y el cuadrante automáticamente.';
-    updateReadout();draw();
-  });
-
-  missionModeBtn.addEventListener('click',()=>{
-    mode='missions';
-    modeBadge.textContent='Modo: Misiones';
-    checkBtn.textContent='Comprobar';
-    updateMission();
-  });
-
-  function showFinal(){
-    const attempts=correct+errors;
-    document.getElementById('statOk').textContent=correct;
-    document.getElementById('statBad').textContent=errors;
-    document.getElementById('statPct').textContent=(attempts?Math.round(correct/attempts*100):100)+'%';
-    finalModal.classList.add('show');
-  }
-
-  restartBtn.addEventListener('click',()=>{
-    current=0;correct=0;errors=0;mode='missions';
-    modeBadge.textContent='Modo: Misiones';
-    checkBtn.textContent='Comprobar';
-    finalModal.classList.remove('show');
-    updateMission();
-  });
-
-  window.addEventListener('resize',resize);
-  resize();
-  updateMission();
+(()=>{
+const $=id=>document.getElementById(id); const canvas=$('plane'),ctx=canvas.getContext('2d'),wrap=$('boardWrap');
+const min=-10,max=10; let W=800,H=800,pad=58,step=34.2,selected=null,hover=null,dragging=false,hintOn=false,selectedChoice=null;
+let mode='missions', blockIndex=0, questionIndex=0, sessionStart=Date.now(), questionStart=Date.now(), timerId=null, retryMode=false, retryQueue=[];
+const stats={correct:0,errors:0,hints:0,firstTry:0,attempts:0,bySkill:{},errorTypes:{signX:0,signY:0,swapXY:0,count:0,quadrant:0,concept:0},questionLog:[],blockStart:Date.now()};
+const skillLabels={placement:'Ubicación de puntos',signs:'Signos y ejes',reading:'Lectura X,Y',precision:'Precisión',geometry:'Geometría cartesiana',reasoning:'Razonamiento y traslaciones'};
+const blocks=[
+ {name:'Fundamentos',skill:'placement',help:'Coloca puntos sencillos en los cuatro cuadrantes.',questions:[
+  [3,2],[6,5],[-4,3],[-7,6],[-5,-3],[-2,-7],[4,-5],[8,-2],[2,7],[-3,8],[-8,-4],[7,-6],[1,4],[-6,2],[5,-8],[-1,-5]].map((p,i)=>({type:'place',label:String.fromCharCode(65+i),x:p[0],y:p[1]}))},
+ {name:'Signos y ejes',skill:'signs',help:'Trabaja positivos, negativos, origen y puntos sobre los ejes.',questions:[
+  {type:'place',label:'A',x:0,y:6},{type:'place',label:'B',x:-6,y:0},{type:'place',label:'C',x:5,y:0},{type:'place',label:'D',x:0,y:-5},{type:'place',label:'E',x:-8,y:4},{type:'place',label:'F',x:8,y:-4},{type:'place',label:'G',x:-7,y:-7},{type:'place',label:'H',x:7,y:7},
+  {type:'quadrant',x:-6,y:5},{type:'quadrant',x:4,y:-8},{type:'quadrant',x:-3,y:-9},{type:'quadrant',x:6,y:2},{type:'quadrant',x:0,y:8},{type:'quadrant',x:-9,y:0},{type:'quadrant',x:0,y:0},{type:'quadrant',x:9,y:0}]},
+ {name:'Interpretación',skill:'reading',help:'Lee puntos ya colocados e identifica sus coordenadas.',questions:[[-4,3],[5,6],[-7,-2],[6,-5],[-2,8],[8,1],[-9,-6],[3,-7],[0,5],[-5,0],[7,0],[0,-8],[-1,4],[4,-1],[-6,7],[9,-3]].map((p,i)=>({type:'read',label:String.fromCharCode(65+i),x:p[0],y:p[1]}))},
+ {name:'Precisión',skill:'precision',help:'Menos ayudas y coordenadas cercanas a los límites.',questions:[[9,9],[-9,8],[8,-9],[-8,-8],[1,9],[-1,9],[9,1],[9,-1],[-9,1],[-9,-1],[1,-9],[-1,-9],[7,8],[-8,7],[8,-7],[-7,-8]].map((p,i)=>({type:'place',label:String.fromCharCode(65+i),x:p[0],y:p[1],hard:true}))},
+ {name:'Geometría',skill:'geometry',help:'Completa figuras y reconoce vértices en el plano.',questions:[
+  {type:'place',label:'A',x:-4,y:-2,shape:[[-4,-2],[4,-2],[4,4],[-4,4]]},{type:'place',label:'B',x:4,y:-2,shape:[[-4,-2],[4,-2],[4,4],[-4,4]]},{type:'place',label:'C',x:4,y:4,shape:[[-4,-2],[4,-2],[4,4],[-4,4]]},{type:'place',label:'D',x:-4,y:4,shape:[[-4,-2],[4,-2],[4,4],[-4,4]]},
+  {type:'quadrant',x:-5,y:5},{type:'quadrant',x:5,y:5},{type:'quadrant',x:5,y:-5},{type:'quadrant',x:-5,y:-5},
+  {type:'read',label:'P',x:-6,y:2},{type:'read',label:'Q',x:6,y:2},{type:'read',label:'R',x:0,y:8},{type:'read',label:'S',x:0,y:-6},
+  {type:'translate',x:2,y:3,dx:4,dy:0},{type:'translate',x:-3,y:2,dx:0,dy:-5},{type:'translate',x:5,y:-2,dx:-7,dy:0},{type:'translate',x:-4,y:-3,dx:0,dy:6}]},
+ {name:'Desafío',skill:'reasoning',help:'Resuelve traslaciones, simetrías y coordenadas finales.',questions:[
+  {type:'translate',x:3,y:4,dx:-5,dy:-7},{type:'translate',x:-6,y:2,dx:8,dy:3},{type:'translate',x:7,y:-5,dx:-4,dy:9},{type:'translate',x:-2,y:-6,dx:5,dy:4},
+  {type:'reflectX',x:4,y:7},{type:'reflectX',x:-5,y:-3},{type:'reflectY',x:6,y:-4},{type:'reflectY',x:-7,y:2},
+  {type:'translate',x:0,y:5,dx:6,dy:-2},{type:'translate',x:8,y:0,dx:-3,dy:-7},{type:'reflectX',x:2,y:-9},{type:'reflectY',x:-9,y:-1},
+  {type:'translate',x:-8,y:7,dx:6,dy:-8},{type:'translate',x:9,y:-6,dx:-8,dy:5},{type:'reflectX',x:-3,y:6},{type:'reflectY',x:5,y:3}]}
+];
+function allQuestions(){return blocks.flatMap((b,bi)=>b.questions.map((q,qi)=>({...q,block:bi,index:qi,skill:b.skill})));}
+function currentQuestion(){if(retryMode)return retryQueue[questionIndex]; const q=blocks[blockIndex].questions[questionIndex]; return {...q,block:blockIndex,index:questionIndex,skill:blocks[blockIndex].skill};}
+function fmt(sec){sec=Math.max(0,Math.floor(sec));return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')}
+function quadrant(x,y){if(x===0&&y===0)return'Origen';if(x===0)return'Eje Y';if(y===0)return'Eje X';if(x>0&&y>0)return'I';if(x<0&&y>0)return'II';if(x<0&&y<0)return'III';return'IV'}
+function gx(x){return pad+(x-min)*step} function gy(y){return H-pad-(y-min)*step}
+function toGrid(px,py){let x=Math.round(min+(px-pad)/step),y=Math.round(min+((H-pad)-py)/step);return{x:Math.max(min,Math.min(max,x)),y:Math.max(min,Math.min(max,y))}}
+function resize(){const r=wrap.getBoundingClientRect(),dpr=Math.max(1,Math.min(2,devicePixelRatio||1));W=Math.floor(r.width);H=Math.floor(r.height);canvas.width=Math.floor(W*dpr);canvas.height=Math.floor(H*dpr);canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);pad=Math.max(38,Math.min(62,W*.075));step=(W-pad*2)/(max-min);draw()}
+function drawArrow(x,y,a){ctx.save();ctx.translate(x,y);ctx.rotate(a);ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(-10,-6);ctx.lineTo(-10,6);ctx.closePath();ctx.fill();ctx.restore()}
+function drawPoint(x,y,label,color='#FD8916'){const px=gx(x),py=gy(y);ctx.save();ctx.shadowBlur=18;ctx.shadowColor=color;ctx.fillStyle=color;ctx.beginPath();ctx.arc(px,py,8,0,Math.PI*2);ctx.fill();ctx.restore();ctx.font='900 13px system-ui';ctx.fillStyle='#FFEDB0';ctx.textAlign='left';ctx.textBaseline='bottom';ctx.fillText(`${label}(${x}, ${y})`,px+11,py-8)}
+function draw(){ctx.clearRect(0,0,W,H);const ox=gx(0),oy=gy(0);ctx.fillStyle='rgba(253,137,22,.025)';ctx.fillRect(ox,pad,W-pad-ox,oy-pad);ctx.fillStyle='rgba(255,237,176,.025)';ctx.fillRect(pad,pad,ox-pad,oy-pad);if(hover){ctx.save();ctx.strokeStyle='rgba(253,137,22,.32)';ctx.lineWidth=2;ctx.setLineDash([6,7]);ctx.beginPath();ctx.moveTo(gx(hover.x),pad);ctx.lineTo(gx(hover.x),H-pad);ctx.stroke();ctx.beginPath();ctx.moveTo(pad,gy(hover.y));ctx.lineTo(W-pad,gy(hover.y));ctx.stroke();ctx.restore()}
+for(let i=min;i<=max;i++){ctx.strokeStyle=i===0?'rgba(255,237,176,.95)':'rgba(118,151,160,.25)';ctx.lineWidth=i===0?2.3:1;ctx.beginPath();ctx.moveTo(gx(i),pad);ctx.lineTo(gx(i),H-pad);ctx.stroke();ctx.beginPath();ctx.moveTo(pad,gy(i));ctx.lineTo(W-pad,gy(i));ctx.stroke()}
+ctx.fillStyle='#FFEDB0';drawArrow(gx(max)+13,gy(0),0);drawArrow(gx(min)-13,gy(0),Math.PI);drawArrow(gx(0),gy(max)-13,-Math.PI/2);drawArrow(gx(0),gy(min)+13,Math.PI/2);ctx.font=`${Math.max(10,Math.min(13,W/55))}px system-ui`;ctx.textAlign='center';ctx.textBaseline='top';for(let i=min;i<=max;i++){if(i!==0){ctx.fillStyle='rgba(255,237,176,.78)';ctx.fillText(i,gx(i),gy(0)+7)}}ctx.textAlign='right';ctx.textBaseline='middle';for(let i=min;i<=max;i++){if(i!==0)ctx.fillText(i,gx(0)-8,gy(i))}ctx.fillStyle='#FD8916';ctx.beginPath();ctx.arc(gx(0),gy(0),4.5,0,Math.PI*2);ctx.fill();ctx.font='800 12px system-ui';ctx.textAlign='left';ctx.textBaseline='bottom';ctx.fillText('O (0,0)',gx(0)+8,gy(0)-7);
+ctx.font=`900 ${Math.max(11,Math.min(15,W/42))}px system-ui`;ctx.fillStyle='rgba(255,237,176,.24)';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('II',(pad+ox)/2,(pad+oy)/2);ctx.fillText('I',(ox+W-pad)/2,(pad+oy)/2);ctx.fillText('III',(pad+ox)/2,(oy+H-pad)/2);ctx.fillText('IV',(ox+W-pad)/2,(oy+H-pad)/2);
+ctx.font=`800 ${Math.max(10,Math.min(13,W/50))}px system-ui`;ctx.fillStyle='#FD8916';ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillText('NORTE',gx(0),pad-19);ctx.textBaseline='top';ctx.fillText('SUR',gx(0),H-pad+18);ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillText('OESTE',pad-18,gy(0));ctx.textAlign='left';ctx.fillText('ESTE',W-pad+18,gy(0));
+const q=currentQuestion(); if(mode==='missions'&&q){if(['read','quadrant','translate','reflectX','reflectY'].includes(q.type))drawPoint(q.x,q.y,q.label||'P','#FFEDB0'); if(q.shape){ctx.save();ctx.strokeStyle='rgba(255,237,176,.38)';ctx.lineWidth=2;ctx.setLineDash([6,6]);ctx.beginPath();q.shape.forEach((p,i)=>{i?ctx.lineTo(gx(p[0]),gy(p[1])):ctx.moveTo(gx(p[0]),gy(p[1]))});ctx.closePath();ctx.stroke();ctx.restore()} if(hintOn&&q.type==='place'){ctx.save();ctx.lineWidth=4;ctx.strokeStyle='rgba(253,137,22,.82)';ctx.setLineDash([9,7]);ctx.beginPath();ctx.moveTo(gx(0),gy(0));ctx.lineTo(gx(q.x),gy(0));ctx.lineTo(gx(q.x),gy(q.y));ctx.stroke();ctx.restore()}}
+if(selected){ctx.save();ctx.strokeStyle='rgba(253,137,22,.55)';ctx.setLineDash([5,5]);ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(gx(selected.x),gy(0));ctx.lineTo(gx(selected.x),gy(selected.y));ctx.stroke();ctx.beginPath();ctx.moveTo(gx(0),gy(selected.y));ctx.lineTo(gx(selected.x),gy(selected.y));ctx.stroke();ctx.restore();drawPoint(selected.x,selected.y,'T','#FD8916')}
+}
+function updateReadout(){if(!selected){$('readX').innerHTML='<b>X = —</b>';$('readY').innerHTML='<b>Y = —</b>';$('readQ').innerHTML='<b>Cuadrante = —</b>';return}const xd=selected.x<0?'izquierda':selected.x>0?'derecha':'origen',yd=selected.y<0?'abajo':selected.y>0?'arriba':'origen';$('readX').innerHTML=`<b>X = ${selected.x}</b> → ${xd}`;$('readY').innerHTML=`<b>Y = ${selected.y}</b> → ${yd}`;$('readQ').innerHTML=`<b>Cuadrante = ${quadrant(selected.x,selected.y)}</b>`}
+function selectPoint(g){selected={x:g.x,y:g.y};$('coordPill').textContent=`x = ${g.x} · y = ${g.y}`;$('coordPill').classList.add('show');updateReadout();if(mode==='free'){$('feedback').className='feedback';$('feedback').innerHTML=`<strong>Exploración</strong>Has colocado P(${g.x}, ${g.y}). Está en <b>${quadrant(g.x,g.y)}</b>.`}draw()}
+canvas.addEventListener('pointerdown',e=>{if(mode==='missions'&&!['place'].includes(currentQuestion().type))return;dragging=true;canvas.setPointerCapture?.(e.pointerId);const r=canvas.getBoundingClientRect();selectPoint(toGrid(e.clientX-r.left,e.clientY-r.top))});canvas.addEventListener('pointermove',e=>{const r=canvas.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;if(px<pad-step*.45||px>W-pad+step*.45||py<pad-step*.45||py>H-pad+step*.45){hover=null;draw();return}hover=toGrid(px,py);$('coordPill').textContent=`x = ${hover.x} · y = ${hover.y}`;$('coordPill').classList.add('show');if(dragging)selectPoint(hover);else draw()});canvas.addEventListener('pointerup',()=>dragging=false);canvas.addEventListener('pointercancel',()=>dragging=false);canvas.addEventListener('pointerleave',()=>{dragging=false;hover=null;if(!selected)$('coordPill').classList.remove('show');draw()});
+function choicesFor(q){if(q.type==='read'){const correct=`(${q.x}, ${q.y})`;return shuffle([correct,`(${q.y}, ${q.x})`,`(${-q.x}, ${q.y})`,`(${q.x}, ${-q.y})`].filter((v,i,a)=>a.indexOf(v)===i)).slice(0,4).map(v=>({label:v,value:v,correct:v===correct}))}if(q.type==='quadrant'){const c=quadrant(q.x,q.y);return ['I','II','III','IV','Eje X','Eje Y','Origen'].filter(v=>[c,'I','II','III','IV','Eje X','Eje Y','Origen'].includes(v)).slice(0,7).map(v=>({label:v,value:v,correct:v===c}))}let tx=q.x,ty=q.y;if(q.type==='translate'){tx=q.x+q.dx;ty=q.y+q.dy}if(q.type==='reflectX'){tx=q.x;ty=-q.y}if(q.type==='reflectY'){tx=-q.x;ty=q.y}const correct=`(${tx}, ${ty})`;return shuffle([correct,`(${ty}, ${tx})`,`(${-tx}, ${ty})`,`(${tx}, ${-ty})`].filter((v,i,a)=>a.indexOf(v)===i)).slice(0,4).map(v=>({label:v,value:v,correct:v===correct}))}
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function renderChoices(q){const box=$('choiceBox'),c=$('choices');c.innerHTML='';selectedChoice=null;if(q.type==='place'){box.classList.add('hidden');$('pointInfo').classList.remove('hidden');return}box.classList.remove('hidden');$('pointInfo').classList.add('hidden');choicesFor(q).forEach(opt=>{const b=document.createElement('button');b.className='choice';b.textContent=opt.label;b.dataset.correct=opt.correct?'1':'0';b.dataset.value=opt.value;b.onclick=()=>{[...c.children].forEach(x=>x.classList.remove('selected'));b.classList.add('selected');selectedChoice={correct:opt.correct,value:opt.value}};c.appendChild(b)})}
+function missionText(q){if(q.type==='place')return`Coloca ${q.label}(${q.x}, ${q.y})`;if(q.type==='read')return`¿Cuáles son las coordenadas de ${q.label||'P'}?`;if(q.type==='quadrant')return`¿Dónde está el punto (${q.x}, ${q.y})?`;if(q.type==='translate')return`Desde (${q.x}, ${q.y}), mueve ${Math.abs(q.dx)} ${q.dx<0?'a la izquierda':q.dx>0?'a la derecha':''}${q.dx&&q.dy?' y ':''}${Math.abs(q.dy)} ${q.dy<0?'hacia abajo':q.dy>0?'hacia arriba':''}. ¿Dónde termina?`;if(q.type==='reflectX')return`Refleja (${q.x}, ${q.y}) respecto del eje X. ¿Cuál es el nuevo punto?`;if(q.type==='reflectY')return`Refleja (${q.x}, ${q.y}) respecto del eje Y. ¿Cuál es el nuevo punto?`;return''}
+function updateMission(){const q=currentQuestion();selected=null;selectedChoice=null;hintOn=false;$('coordPill').classList.remove('show');questionStart=Date.now();$('missionText').textContent=missionText(q);$('missionHelp').textContent=retryMode?'Práctica personalizada basada en tus errores.':blocks[q.block].help;$('blockName').textContent=retryMode?'Refuerzo personalizado':`Bloque ${q.block+1} · ${blocks[q.block].name}`;$('globalBadge').textContent=retryMode?'Modo refuerzo':`Nivel ${q.block+1} de 6`;const global=retryMode?questionIndex+1:q.block*16+questionIndex+1,total=retryMode?retryQueue.length:96;$('counter').textContent=`${retryMode?questionIndex+1:questionIndex+1}/${retryMode?retryQueue.length:16} · ${global}/${total}`;$('progressBar').style.width=`${global/total*100}%`;$('feedback').className='feedback';$('feedback').innerHTML='<strong>Tu turno</strong>Analiza la coordenada antes de responder.';renderChoices(q);updateReadout();draw()}
+function classifyPlacementError(q,a){if(a.x===-q.x&&a.y===q.y)return'signX';if(a.x===q.x&&a.y===-q.y)return'signY';if(a.x===q.y&&a.y===q.x)return'swapXY';return'count'}
+function recordSkill(skill,ok){stats.bySkill[skill]??={ok:0,total:0};stats.bySkill[skill].total++;if(ok)stats.bySkill[skill].ok++}
+function check(){if(mode==='free'){return}const q=currentQuestion();let ok=false,errorType='concept';if(q.type==='place'){if(!selected){$('feedback').className='feedback bad shake';$('feedback').innerHTML='<strong>Falta colocar el punto</strong>Toca una intersección antes de comprobar.';return}ok=selected.x===q.x&&selected.y===q.y;if(!ok)errorType=classifyPlacementError(q,selected)}else{if(!selectedChoice){$('feedback').className='feedback bad shake';$('feedback').innerHTML='<strong>Selecciona una opción</strong>Elige una respuesta antes de comprobar.';return}ok=selectedChoice.correct;if(!ok)errorType=q.type==='quadrant'?'quadrant':q.type==='read'?'swapXY':'concept'}stats.attempts++;recordSkill(q.skill,ok);const elapsed=(Date.now()-questionStart)/1000;if(ok){stats.correct++;if(!stats.questionLog.some(x=>x.key===`${q.block}-${q.index}`&&x.wrong))stats.firstTry++;stats.questionLog.push({key:`${q.block}-${q.index}`,q,wrong:false,time:elapsed});$('feedback').className='feedback good pulse';$('feedback').innerHTML='<strong>✓ Correcto</strong>Buen trabajo. Avanzas al siguiente reto.';setTimeout(advance,650)}else{stats.errors++;stats.errorTypes[errorType]=(stats.errorTypes[errorType]||0)+1;stats.questionLog.push({key:`${q.block}-${q.index}`,q,wrong:true,time:elapsed,errorType});hintOn=true;$('feedback').className='feedback bad shake';$('feedback').innerHTML=`<strong>Inténtalo de nuevo</strong>${errorMessage(errorType,q)}`;draw()}}
+function errorMessage(t,q){if(t==='signX')return'Revisa el signo de X: izquierda es negativo y derecha es positivo.';if(t==='signY')return'Revisa el signo de Y: abajo es negativo y arriba es positivo.';if(t==='swapXY')return'Recuerda el orden: primero X y después Y.';if(t==='quadrant')return'Revisa los signos de X y Y para identificar el cuadrante.';if(t==='count')return'Cuenta nuevamente las unidades desde el origen.';return'Vuelve a analizar la transformación paso a paso.'}
+function advance(){if(retryMode){if(questionIndex<retryQueue.length-1){questionIndex++;updateMission()}else showFinal(true);return}if(questionIndex<15){questionIndex++;updateMission()}else if(blockIndex<blocks.length-1){showBlockComplete()}else showFinal(false)}
+function showBlockComplete(){const block=blockIndex;const logs=stats.questionLog.filter(x=>x.q.block===block);const uniqueCorrect=new Set(logs.filter(x=>!x.wrong).map(x=>x.key)).size;const errs=logs.filter(x=>x.wrong).length;const hints=logs.filter(x=>x.hint).length;const seconds=(Date.now()-stats.blockStart)/1000;$('blockModalTitle').textContent=`Bloque ${block+1} completado: ${blocks[block].name}`;$('blockModalText').textContent='Has terminado 16 ejercicios. El siguiente bloque aumenta el nivel de razonamiento.';$('blockOk').textContent=uniqueCorrect;$('blockErrors').textContent=errs;$('blockHints').textContent=hints;$('blockTime').textContent=fmt(seconds);$('blockModal').classList.add('show')}
+$('nextBlockBtn').onclick=()=>{$('blockModal').classList.remove('show');blockIndex++;questionIndex=0;stats.blockStart=Date.now();updateMission()};
+function showFinal(isRetry){const attempts=stats.correct+stats.errors,pct=attempts?Math.round(stats.correct/attempts*100):100;$('statOk').textContent=stats.correct;$('statBad').textContent=stats.errors;$('statPct').textContent=pct+'%';$('statTime').textContent=fmt((Date.now()-sessionStart)/1000);const skills=$('skillsReport');skills.innerHTML='';Object.entries(skillLabels).forEach(([k,label])=>{const s=stats.bySkill[k]||{ok:0,total:0},p=s.total?Math.round(s.ok/s.total*100):0;skills.insertAdjacentHTML('beforeend',`<div class="skill-row"><span>${label}</span><b>${p}%</b></div>`)});const names={signX:'Signo de X',signY:'Signo de Y',swapXY:'Orden X,Y',count:'Conteo/desplazamiento',quadrant:'Cuadrantes',concept:'Razonamiento'};$('errorsReport').innerHTML=Object.entries(names).map(([k,v])=>`<div class="skill-row"><span>${v}</span><b>${stats.errorTypes[k]||0}</b></div>`).join('');let rec=pct>=90?'🏆 Dominio sólido. Puedes avanzar a retos más complejos.':pct>=75?'👍 Buen progreso. Conviene reforzar las habilidades con menor porcentaje.':pct>=60?'📘 Necesita más práctica. Repite los errores antes de avanzar.':'🎯 Reforzamiento recomendado. Empieza por signos, orden X,Y y ubicación desde el origen.';$('recommendation').innerHTML=`<strong>Diagnóstico:</strong> ${rec}`;$('retryErrorsBtn').disabled=!stats.questionLog.some(x=>x.wrong);$('finalModal').classList.add('show')}
+$('retryErrorsBtn').onclick=()=>{const seen=new Set();retryQueue=stats.questionLog.filter(x=>x.wrong).map(x=>x.q).filter(q=>{const k=`${q.block}-${q.index}`;if(seen.has(k))return false;seen.add(k);return true});if(!retryQueue.length)return;$('finalModal').classList.remove('show');retryMode=true;questionIndex=0;updateMission()};
+$('restartBtn').onclick=()=>{location.reload()};$('checkBtn').onclick=check;$('clearBtn').onclick=()=>{selected=null;selectedChoice=null;[...$('choices').children].forEach(x=>x.classList.remove('selected'));$('coordPill').classList.remove('show');updateReadout();draw()};$('hintBtn').onclick=()=>{stats.hints++;const q=currentQuestion();stats.questionLog.push({key:`${q.block}-${q.index}`,q,hint:true,time:(Date.now()-questionStart)/1000});hintOn=!hintOn;$('feedback').className='feedback';$('feedback').innerHTML=hintOn?`<strong>Pista</strong>${q.type==='place'?'Sigue la ruta desde el origen: primero X y luego Y.':errorMessage(q.type==='quadrant'?'quadrant':q.type==='read'?'swapXY':'concept',q)}`:'<strong>Pista oculta</strong>Ahora inténtalo sin ayuda.';draw()};
+$('freeModeBtn').onclick=()=>{mode='free';$('modeBadge').textContent='Modo: Explorar';$('missionText').textContent='Toca cualquier coordenada';$('missionHelp').textContent='Explora sin calificación ni penalización.';$('choiceBox').classList.add('hidden');$('pointInfo').classList.remove('hidden');$('checkBtn').disabled=true;selected=null;draw()};$('missionModeBtn').onclick=()=>{mode='missions';$('modeBadge').textContent='Modo: Misiones';$('checkBtn').disabled=false;updateMission()};
+timerId=setInterval(()=>{$('totalTime').textContent=fmt((Date.now()-sessionStart)/1000);$('questionTime').textContent=fmt((Date.now()-questionStart)/1000)},500);window.addEventListener('resize',resize);resize();updateMission();
 })();
 </script>
 </body>

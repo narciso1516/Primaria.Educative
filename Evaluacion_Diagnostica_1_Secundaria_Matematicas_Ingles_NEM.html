@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0b4f6c" />
+<title>Misión Secundaria · Matemáticas e Inglés</title>
+<style>
+:root{
+  --ink:#123047; --navy:#0b4f6c; --blue:#1f7a8c; --sky:#d9f0f7;
+  --paper:#fbfdff; --yellow:#ffcb69; --orange:#f4a261; --green:#2a9d8f;
+  --red:#d95d5d; --muted:#5f7180; --line:#d7e4eb; --shadow:0 14px 40px rgba(18,48,71,.12);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,ui-rounded,"Avenir Next",system-ui,-apple-system,sans-serif;background:linear-gradient(135deg,#eef8fb 0%,#fff9ec 100%);color:var(--ink);min-height:100vh}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{max-width:980px;margin:auto;padding:18px}
+.hero{background:linear-gradient(135deg,var(--navy),var(--blue));color:white;border-radius:28px;padding:30px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,.08);right:-70px;top:-90px}
+.hero h1{margin:0 0 8px;font-size:clamp(1.8rem,5vw,3rem);line-height:1.05}
+.hero p{margin:8px 0;max-width:720px;line-height:1.55}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.badge{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);padding:7px 11px;border-radius:999px;font-size:.9rem}
+.panel{background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:24px;padding:24px;margin-top:18px;box-shadow:var(--shadow)}
+.start-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}.mini{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:15px}.mini b{display:block;font-size:1.3rem;margin-bottom:3px}.mini span{color:var(--muted);font-size:.9rem}
+.primary,.secondary,.ghost{border:0;border-radius:14px;padding:12px 18px;font-weight:800;transition:.2s transform,.2s box-shadow}.primary{background:var(--yellow);color:#513600;box-shadow:0 6px 0 #d7a63f}.primary:hover{transform:translateY(-2px)}.primary:active{transform:translateY(3px);box-shadow:0 3px 0 #d7a63f}.secondary{background:var(--navy);color:white}.ghost{background:white;color:var(--navy);border:1px solid var(--line)}
+.hidden{display:none!important}
+.topbar{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap}.progress-wrap{flex:1;min-width:220px}.progress-track{height:12px;background:#e8f0f4;border-radius:999px;overflow:hidden}.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--yellow));transition:width .5s ease}.progress-label{font-size:.88rem;color:var(--muted);margin-top:5px}
+.question-card{position:relative;overflow:hidden}.question-card.enter{animation:cardIn .35s ease}@keyframes cardIn{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:none}}
+.q-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.tag{font-weight:800;font-size:.78rem;padding:6px 9px;border-radius:999px;background:var(--sky);color:var(--navy)}.tag.level-facil{background:#def5ec;color:#176a58}.tag.level-intermedio{background:#fff0c9;color:#805d00}.tag.level-avanzado{background:#ffe2dc;color:#8b3d2f}
+.q-title{font-size:clamp(1.25rem,3.8vw,1.75rem);line-height:1.35;margin:10px 0 16px}.scenario{background:#f4f9fb;border-left:5px solid var(--blue);padding:14px 16px;border-radius:12px;margin-bottom:16px;line-height:1.55}.math-box{font-family:"SFMono-Regular",Consolas,monospace;background:#102a3a;color:#f8fbfd;padding:16px;border-radius:16px;font-size:1.25rem;text-align:center;white-space:pre-wrap;margin:12px 0}
+.options{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.option{background:white;border:2px solid var(--line);border-radius:15px;padding:14px;text-align:left;font-weight:700;color:var(--ink);transition:.18s}.option:hover{border-color:var(--blue);transform:translateY(-1px)}.option.selected{border-color:var(--navy);background:#eaf6fa;box-shadow:0 0 0 3px rgba(31,122,140,.12)}
+.answer-input{width:100%;border:2px solid var(--line);border-radius:15px;padding:14px 16px;font-size:1.1rem;outline:none}.answer-input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(31,122,140,.12)}
+.builder{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.word{border:1px solid var(--line);background:white;border-radius:12px;padding:10px 12px;font-weight:800}.word:disabled{opacity:.35}.built{min-height:54px;border:2px dashed #9db9c7;border-radius:14px;padding:10px;display:flex;gap:7px;flex-wrap:wrap;align-items:center;background:#f9fcfd}.built .chip{background:var(--navy);color:white;padding:8px 10px;border-radius:10px}.builder-actions{display:flex;gap:8px;margin-top:9px}
+.feedback{margin-top:14px;padding:14px 16px;border-radius:15px;line-height:1.45;font-weight:650}.feedback.good{background:#e0f5ee;color:#145c4f;border:1px solid #acdccc}.feedback.warn{background:#fff5d8;color:#725500;border:1px solid #eed797}.feedback.bad{background:#ffe8e4;color:#7a3228;border:1px solid #efb8af}
+.actions{display:flex;justify-content:space-between;gap:10px;margin-top:18px;flex-wrap:wrap}.speak{display:inline-flex;align-items:center;gap:7px;background:#edf7fa;color:var(--navy);border:1px solid #c9e3eb;border-radius:12px;padding:9px 12px;font-weight:800}
+.report-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}.kpi{border-radius:18px;padding:16px;background:#f7fbfd;border:1px solid var(--line)}.kpi .big{font-size:2rem;font-weight:900}.kpi small{color:var(--muted)}
+.skill-row{display:grid;grid-template-columns:minmax(140px,1fr) 2fr 70px;align-items:center;gap:10px;margin:10px 0}.skill-track{height:12px;background:#e7eef2;border-radius:999px;overflow:hidden}.skill-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--yellow),var(--green));border-radius:999px}.skill-pct{text-align:right;font-weight:900}
+.plan{background:#fff8e8;border:1px solid #f0d59e;border-radius:18px;padding:16px;margin:16px 0}.plan h3{margin-top:0}.practice-box{border:2px dashed #aac7d3;border-radius:20px;padding:18px;margin-top:16px;background:#f8fcfd}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:24px 8px 10px}
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:999}.confetti i{position:absolute;top:-20px;width:9px;height:14px;background:var(--yellow);animation:fall 1.6s linear forwards}.confetti i:nth-child(3n){background:var(--green)}.confetti i:nth-child(3n+1){background:var(--orange)}@keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:.2}}
+@media(max-width:700px){.app{padding:10px}.hero,.panel{border-radius:20px;padding:18px}.start-grid,.report-grid{grid-template-columns:1fr}.options{grid-template-columns:1fr}.skill-row{grid-template-columns:1fr 65px}.skill-track{grid-column:1/3}.actions>*{flex:1}.topbar{align-items:stretch}.hero p{font-size:.95rem}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <section class="hero">
+    <h1>🚀 Misión Secundaria</h1>
+    <p><b>Evaluación diagnóstica y formativa · Matemáticas + Inglés · 1.º de secundaria</b></p>
+    <p>Resuelve, recibe pistas sin que se revele de inmediato la respuesta y demuestra tu dominio. El objetivo no es “pasar un examen”, sino identificar lo que ya sabes y lo que necesitas practicar.</p>
+    <div class="badges"><span class="badge">50 actividades</span><span class="badge">Fácil → intermedio → avanzado</span><span class="badge">Retroalimentación progresiva</span><span class="badge">Reporte por habilidades</span></div>
+  </section>
+
+  <section id="start" class="panel">
+    <h2>Antes de comenzar</h2>
+    <p>Trabajarás con operaciones básicas, decimales, problemas cotidianos, vocabulario y expresiones de inglés usadas en la escuela. En las preguntas de inglés puedes usar el botón 🔊 para escuchar.</p>
+    <div class="start-grid">
+      <div class="mini"><b>30</b><span>Matemáticas</span></div>
+      <div class="mini"><b>20</b><span>Inglés</span></div>
+      <div class="mini"><b>3</b><span>Niveles de dificultad</span></div>
+    </div>
+    <label><b>Nombre del estudiante (opcional)</b></label>
+    <input id="studentName" class="answer-input" style="margin:8px 0 16px" placeholder="Escribe tu nombre" autocomplete="name" />
+    <button id="startBtn" class="primary">Comenzar evaluación</button>
+  </section>
+
+  <section id="quiz" class="panel hidden">
+    <div class="topbar">
+      <div class="progress-wrap"><div class="progress-track"><div id="progress" class="progress-bar"></div></div><div id="progressLabel" class="progress-label"></div></div>
+      <button id="speakBtn" class="speak hidden" type="button">🔊 Escuchar</button>
+    </div>
+    <div id="card" class="question-card"></div>
+  </section>
+
+  <section id="report" class="panel hidden"></section>
+</div>
+<div id="confetti" class="confetti" aria-hidden="true"></div>
+<footer>Material educativo de reforzamiento y evaluación formativa para 1.º de secundaria · Enfoque compatible con la Nueva Escuela Mexicana.</footer>
+<script>
+const Q = [
+// MATEMÁTICAS · FÁCIL
+{subject:'Matemáticas',level:'Fácil',skill:'Sumas',type:'choice',q:'Calcula: 267 + 345',options:['602','612','622','512'],a:'612',hint:'Suma primero las unidades, después las decenas y finalmente las centenas.'},
+{subject:'Matemáticas',level:'Fácil',skill:'Sumas',type:'input',q:'Calcula: 789 + 478',a:'1267',hint:'Puedes acomodar los números en columnas: unidades debajo de unidades.'},
+{subject:'Matemáticas',level:'Fácil',skill:'Restas',type:'choice',q:'Calcula: 789 − 599',options:['180','190','200','290'],a:'190',hint:'Comprueba tu resultado sumándolo a 599.'},
+{subject:'Matemáticas',level:'Fácil',skill:'Restas',type:'input',q:'Calcula: 856 − 399',a:'457',hint:'Una estrategia es restar 400 y luego sumar 1.'},
+{subject:'Matemáticas',level:'Fácil',skill:'Multiplicaciones',type:'choice',q:'Calcula: 24 × 6',options:['124','134','144','154'],a:'144',hint:'Piensa en 20×6 y 4×6, luego suma.'},
+{subject:'Matemáticas',level:'Fácil',skill:'Multiplicaciones',type:'input',q:'Calcula: 35 × 8',a:'280',hint:'Separa 35 en 30 + 5.'},
+{subject:'Matemáticas',level:'Fácil',skill:'Divisiones',type:'choice',q:'Calcula: 84 ÷ 7',options:['10','11','12','14'],a:'12',hint:'¿Qué número multiplicado por 7 da 84?'},
+{subject:'Matemáticas',level:'Fácil',skill:'Divisiones',type:'input',q:'Calcula: 96 ÷ 8',a:'12',hint:'Usa la tabla del 8.'},
+{subject:'Matemáticas',level:'Fácil',skill:'Problemas matemáticos',type:'choice',q:'En una escuela hay 128 estudiantes de primer grado y llegan 37 más. ¿Cuántos hay ahora?',options:['155','165','175','185'],a:'165',hint:'La cantidad aumenta: identifica qué operación corresponde.'},
+{subject:'Matemáticas',level:'Fácil',skill:'Problemas matemáticos',type:'input',q:'Ana tenía $250 y gastó $85 en útiles. ¿Cuánto dinero le quedó?',a:'165',hint:'Si gasta dinero, la cantidad disminuye.'},
+// MATEMÁTICAS · INTERMEDIO
+{subject:'Matemáticas',level:'Intermedio',skill:'Sumas',type:'input',q:'Calcula: 1,478 + 897',a:'2375',hint:'Alinea centenas, decenas y unidades.'},
+{subject:'Matemáticas',level:'Intermedio',skill:'Multiplicaciones',type:'choice',q:'Calcula: 2,145 × 6',options:['12,870','12,780','13,870','11,870'],a:'12870',hint:'Multiplica de derecha a izquierda y registra los llevados.'},
+{subject:'Matemáticas',level:'Intermedio',skill:'Multiplicaciones',type:'input',q:'Calcula: 8,329 × 4',a:'33316',hint:'Empieza por 9×4 y avanza por cada posición.'},
+{subject:'Matemáticas',level:'Intermedio',skill:'Multiplicaciones',type:'input',q:'Calcula: 2,145 × 86',a:'184470',hint:'Puedes calcular 2,145×80 y 2,145×6, y después sumar.'},
+{subject:'Matemáticas',level:'Intermedio',skill:'Divisiones',type:'choice',q:'458 ÷ 23 es:',options:['19 y sobra 21','20 exacto','18 y sobra 14','21 exacto'],a:'19 y sobra 21',hint:'Prueba 23×19 y compara con 458.'},
+{subject:'Matemáticas',level:'Intermedio',skill:'Decimales',type:'input',q:'Calcula: 87.25 − 40.10',a:'47.15',hint:'Alinea los puntos decimales antes de restar.'},
+{subject:'Matemáticas',level:'Intermedio',skill:'Decimales',type:'choice',q:'Calcula: 100.99 − 99.36',options:['1.53','1.63','1.73','2.63'],a:'1.63',hint:'Mantén centésimas debajo de centésimas.'},
+{subject:'Matemáticas',level:'Intermedio',skill:'Problemas matemáticos',type:'input',q:'Una maestra compró 8 paquetes con 24 lápices cada uno. ¿Cuántos lápices compró?',a:'192',hint:'Hay grupos iguales: piensa en multiplicación.'},
+{subject:'Matemáticas',level:'Intermedio',skill:'Problemas matemáticos',type:'choice',q:'En una biblioteca hay 1,250 libros. Se prestaron 378. ¿Cuántos quedaron?',options:['862','872','882','972'],a:'872',hint:'La biblioteca pierde temporalmente libros: resta.'},
+{subject:'Matemáticas',level:'Intermedio',skill:'Problemas matemáticos',type:'input',q:'Se reparten 156 cuadernos entre 12 estudiantes en partes iguales. ¿Cuántos recibe cada estudiante?',a:'13',hint:'Repartir en partes iguales corresponde a dividir.'},
+// MATEMÁTICAS · AVANZADO
+{subject:'Matemáticas',level:'Avanzado',skill:'Sumas',type:'input',q:'Calcula: 78 + 23 + 789 + 1,478 + 897',a:'3265',hint:'Agrupa números para reducir errores y revisa cada columna.'},
+{subject:'Matemáticas',level:'Avanzado',skill:'Sumas',type:'input',q:'Calcula: 267 + 345 + 1,090 + 23 + 567 + 231',a:'2523',hint:'Suma primero centenas y millares, luego verifica con otra agrupación.'},
+{subject:'Matemáticas',level:'Avanzado',skill:'Decimales',type:'input',q:'Calcula: 17.98 × 6.4',a:'115.072',hint:'Multiplica como enteros y al final coloca 3 cifras decimales en total.'},
+{subject:'Matemáticas',level:'Avanzado',skill:'Decimales',type:'choice',q:'Calcula: 256.29 × 7.8',options:['1,899.062','1,999.062','2,099.062','1,999.620'],a:'1999.062',hint:'Ignora temporalmente los puntos y después cuenta 3 decimales en total.'},
+{subject:'Matemáticas',level:'Avanzado',skill:'Problemas matemáticos',type:'input',q:'Una escuela compró 23 cajas con 48 lápices cada una. ¿Cuántos lápices recibió?',a:'1104',hint:'Calcula 48×20 y 48×3; después suma.'},
+{subject:'Matemáticas',level:'Avanzado',skill:'Problemas matemáticos',type:'input',q:'Una familia compra 6 cuadernos de $27.50 cada uno. ¿Cuánto paga?',a:'165',hint:'Multiplica el precio de un cuaderno por 6.'},
+{subject:'Matemáticas',level:'Avanzado',skill:'Problemas matemáticos',type:'choice',q:'Una cooperativa reunió $2,450.75 y gastó $1,875.50. ¿Cuánto quedó?',options:['$565.25','$575.25','$585.25','$675.25'],a:'575.25',hint:'Alinea los decimales y resta lo gastado a lo reunido.'},
+{subject:'Matemáticas',level:'Avanzado',skill:'Problemas matemáticos',type:'input',q:'Hay 288 estudiantes y se forman equipos de 12. ¿Cuántos equipos completos se forman?',a:'24',hint:'Busca cuántas veces cabe 12 en 288.'},
+{subject:'Matemáticas',level:'Avanzado',skill:'Problemas matemáticos',type:'input',q:'Sofía ahorra $35 diarios durante 18 días y después gasta $175. ¿Cuánto conserva?',a:'455',hint:'Es un problema de dos pasos: primero calcula el ahorro total.'},
+{subject:'Matemáticas',level:'Avanzado',skill:'Problemas matemáticos',type:'input',q:'Una papelería recibió 15 cajas con 36 lápices cada una. Vendió 275. ¿Cuántos lápices quedan?',a:'265',hint:'Primero encuentra cuántos lápices llegaron y luego resta los vendidos.'},
+// INGLÉS · FÁCIL
+{subject:'Inglés',level:'Fácil',skill:'Vocabulario',type:'choice',q:'¿Cómo se dice “Hola” en inglés?',options:['Goodbye','Hello','Please','Sorry'],a:'hello',speak:'Hello',hint:'Es el saludo más común al encontrarte con alguien.'},
+{subject:'Inglés',level:'Fácil',skill:'Vocabulario',type:'choice',q:'¿Cómo se dice “Gracias” en inglés?',options:['Thank you','Please','Hello','Welcome'],a:'thank you',speak:'Thank you',hint:'Se usa para agradecer algo.'},
+{subject:'Inglés',level:'Fácil',skill:'Vocabulario',type:'choice',q:'¿Cómo se dice “libro” en inglés?',options:['Pencil','Chair','Book','Table'],a:'book',speak:'Book',hint:'Empieza con la letra B.'},
+{subject:'Inglés',level:'Fácil',skill:'Vocabulario',type:'input',q:'Escribe en inglés: “maestro / maestra”',a:'teacher',speak:'Teacher',hint:'Empieza con “tea…” y termina con “…cher”.'},
+{subject:'Inglés',level:'Fácil',skill:'Vocabulario',type:'choice',q:'“Pencil” significa:',options:['Pluma','Cuaderno','Lápiz','Mochila'],a:'lápiz',speak:'Pencil',hint:'Es un objeto que puedes usar para escribir y borrar.'},
+{subject:'Inglés',level:'Fácil',skill:'Vocabulario',type:'input',q:'¿Qué significa “school” en español?',a:['escuela','la escuela'],speak:'School',hint:'Es el lugar donde estudias.'},
+{subject:'Inglés',level:'Fácil',skill:'Expresiones escolares',type:'choice',q:'“Good morning” significa:',options:['Buenas noches','Buenas tardes','Buenos días','Adiós'],a:'buenos días',speak:'Good morning',hint:'Se utiliza al saludar por la mañana.'},
+// INGLÉS · INTERMEDIO
+{subject:'Inglés',level:'Intermedio',skill:'Expresiones escolares',type:'build',q:'Ordena las palabras para decir: “¿Puedo entrar?”',words:['in','May','come','I','?'],a:'may i come in ?',speak:'May I come in?',hint:'La oración comienza con “May I…”.'},
+{subject:'Inglés',level:'Intermedio',skill:'Expresiones escolares',type:'build',q:'Ordena las palabras para decir: “¿Puedo ir al baño?”',words:['bathroom','the','to','I','May','go','?'],a:'may i go to the bathroom ?',speak:'May I go to the bathroom?',hint:'Empieza con “May I go…”.'},
+{subject:'Inglés',level:'Intermedio',skill:'Comprensión en inglés',type:'choice',q:'“Sit down, please” significa:',options:['Guarda silencio.','Levántate.','Siéntate, por favor.','Entra, por favor.'],a:'siéntate, por favor.',speak:'Sit down, please',hint:'“Sit down” es una instrucción relacionada con la silla.'},
+{subject:'Inglés',level:'Intermedio',skill:'Comprensión en inglés',type:'choice',q:'“Open your book” significa:',options:['Cierra tu libro.','Abre tu libro.','Guarda tu libro.','Lee tu cuaderno.'],a:'abre tu libro.',speak:'Open your book',hint:'“Open” es lo contrario de “close”.'},
+{subject:'Inglés',level:'Intermedio',skill:'Gramática básica',type:'choice',q:'Completa: “My name ___ Carlos.”',options:['am','are','is','be'],a:'is',speak:'My name is Carlos.',hint:'“My name” es singular.'},
+{subject:'Inglés',level:'Intermedio',skill:'Comprensión en inglés',type:'choice',q:'“I am twelve years old” significa:',options:['Tengo doce años.','Son las doce.','Tengo doce libros.','Estoy en doce materias.'],a:'tengo doce años.',speak:'I am twelve years old',hint:'“Years old” se usa para expresar edad.'},
+{subject:'Inglés',level:'Intermedio',skill:'Gramática básica',type:'input',q:'Completa con una sola palabra: “This ___ my notebook.”',a:'is',speak:'This is my notebook.',hint:'“This” se refiere a una sola cosa.'},
+// INGLÉS · AVANZADO
+{subject:'Inglés',level:'Avanzado',skill:'Expresiones escolares',type:'choice',q:'María quiere pedir permiso para tomar agua. ¿Qué debería decir?',options:['May I drink some water, please?','I water please.','May water me?','Drink I water?'],a:'may i drink some water, please?',speak:'May I drink some water, please?',hint:'Busca la opción con estructura “May I + verbo…?”.'},
+{subject:'Inglés',level:'Avanzado',skill:'Comprensión en inglés',type:'choice',q:'El maestro dice: “Please, write your name in your notebook.” ¿Qué debes hacer?',options:['Abrir la puerta.','Escribir tu nombre en tu cuaderno.','Leer un libro.','Levantarte.'],a:'escribir tu nombre en tu cuaderno.',speak:'Please, write your name in your notebook.',hint:'Identifica las palabras “write”, “name” y “notebook”.'},
+{subject:'Inglés',level:'Avanzado',skill:'Gramática básica',type:'choice',q:'Completa: “I ___ a student.”',options:['is','are','am','be'],a:'am',speak:'I am a student.',hint:'Con el pronombre “I”, el verbo to be usa una forma especial.'},
+{subject:'Inglés',level:'Avanzado',skill:'Gramática básica',type:'input',q:'Completa con una sola palabra: “She ___ my teacher.”',a:'is',speak:'She is my teacher.',hint:'“She” es tercera persona singular.'},
+{subject:'Inglés',level:'Avanzado',skill:'Lectura breve',type:'choice',q:'Lee: “Daniel is 12 years old. He is a student. He likes mathematics.” ¿Qué materia le gusta a Daniel?',options:['English','Science','Mathematics','History'],a:'mathematics',speak:'Daniel is twelve years old. He is a student. He likes mathematics.',hint:'Busca la frase “He likes…”.'},
+{subject:'Inglés',level:'Avanzado',skill:'Lectura breve',type:'choice',q:'Lee: “Laura goes to school in the morning. She has English class at 9:00. She likes her English class.” ¿A qué hora tiene inglés?',options:['8:00','9:00','10:00','11:00'],a:'9:00',speak:'Laura goes to school in the morning. She has English class at nine o clock. She likes her English class.',hint:'La hora aparece justo después de “English class at…”.'}
+];
+
+let idx=0, selected=null, attempts=0, built=[];
+const firstTry = Array(Q.length).fill(null); // true/false según primer intento
+const mastered = Array(Q.length).fill(false);
+const tries = Array(Q.length).fill(0);
+const $=s=>document.querySelector(s);
+function norm(v){return String(v??'').trim().toLowerCase().replace(/[$,]/g,'').replace(/\s+/g,' ')}
+function answerOK(q,v){const nv=norm(v); return Array.isArray(q.a)?q.a.some(x=>norm(x)===nv):norm(q.a)===nv}
+function levelClass(level){return 'level-'+level.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+function render(){
+  const q=Q[idx]; selected=null; attempts=tries[idx]||0; built=[];
+  $('#progress').style.width=((idx)/Q.length*100)+'%';
+  $('#progressLabel').textContent=`Actividad ${idx+1} de ${Q.length} · ${q.subject}`;
+  $('#speakBtn').classList.toggle('hidden',!q.speak); $('#speakBtn').onclick=()=>speak(q.speak||q.q);
+  let input='';
+  if(q.type==='choice') input=`<div class="options">${q.options.map(o=>`<button class="option" data-v="${escapeHtml(o)}">${escapeHtml(o)}</button>`).join('')}</div>`;
+  if(q.type==='input') input=`<input id="freeInput" class="answer-input" inputmode="${q.subject==='Matemáticas'?'decimal':'text'}" autocomplete="off" placeholder="Escribe tu respuesta" />`;
+  if(q.type==='build') input=`<div class="builder" id="words">${q.words.map((w,i)=>`<button class="word" data-i="${i}">${escapeHtml(w)}</button>`).join('')}</div><div class="built" id="built"><span style="color:#6d8290">Toca las palabras en el orden correcto…</span></div><div class="builder-actions"><button class="ghost" id="undo">↩ Deshacer</button><button class="ghost" id="clear">Limpiar</button></div>`;
+  $('#card').innerHTML=`<div class="q-meta"><span class="tag">${q.subject}</span><span class="tag ${levelClass(q.level)}">${q.level}</span><span class="tag">${q.skill}</span></div><div class="q-title">${escapeHtml(q.q)}</div>${q.subject==='Matemáticas'&&/[×÷−+]/.test(q.q)?`<div class="math-box">${escapeHtml(q.q.replace('Calcula: ','').replace('Completa: ',''))}</div>`:''}${input}<div id="feedback"></div><div class="actions"><button id="check" class="primary">Comprobar</button><button id="next" class="secondary hidden">Siguiente →</button></div>`;
+  $('#card').classList.remove('enter'); void $('#card').offsetWidth; $('#card').classList.add('enter');
+  if(q.type==='choice') document.querySelectorAll('.option').forEach(b=>b.onclick=()=>{document.querySelectorAll('.option').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');selected=b.dataset.v});
+  if(q.type==='build') setupBuilder();
+  $('#check').onclick=check;
+  $('#next').onclick=next;
+  if(q.type==='input') $('#freeInput').addEventListener('keydown',e=>{if(e.key==='Enter') check()});
+}
+function setupBuilder(){
+  document.querySelectorAll('.word').forEach(b=>b.onclick=()=>{built.push({i:+b.dataset.i,w:b.textContent});b.disabled=true;updateBuilt()});
+  $('#undo').onclick=()=>{const last=built.pop();if(last){document.querySelector(`.word[data-i="${last.i}"]`).disabled=false;updateBuilt()}};
+  $('#clear').onclick=()=>{built=[];document.querySelectorAll('.word').forEach(b=>b.disabled=false);updateBuilt()};
+}
+function updateBuilt(){const el=$('#built');el.innerHTML=built.length?built.map(x=>`<span class="chip">${escapeHtml(x.w)}</span>`).join(''):'<span style="color:#6d8290">Toca las palabras en el orden correcto…</span>'}
+function getResponse(q){if(q.type==='choice')return selected;if(q.type==='input')return $('#freeInput').value;if(q.type==='build')return built.map(x=>x.w).join(' ')}
+function check(){
+  const q=Q[idx], response=getResponse(q);
+  if(response==null||norm(response)===''){showFeedback('warn','Antes de comprobar, selecciona o escribe una respuesta.');return}
+  tries[idx]++; attempts=tries[idx]; const ok=answerOK(q,response);
+  if(firstTry[idx]===null) firstTry[idx]=ok;
+  if(ok){mastered[idx]=true;showFeedback('good',attempts===1?'✅ ¡Correcto en el primer intento! Explicaste tu dominio sin ayuda.':'✅ ¡Correcto! Usaste la retroalimentación para mejorar.');lockAndNext();return}
+  if(attempts===1){showFeedback('warn',`💡 Aún no. Pista: ${q.hint}`);return}
+  if(attempts===2){showFeedback('bad',`🔎 Segundo intento incorrecto. La respuesta correcta es <b>${displayAnswer(q.a)}</b>. Lee la explicación y continúa; esta habilidad aparecerá en tu plan de refuerzo.`);lockAndNext();return}
+}
+function lockAndNext(){document.querySelectorAll('.option,.word,#freeInput,#check,#undo,#clear').forEach(el=>{if(el) el.disabled=true});$('#check').classList.add('hidden');$('#next').classList.remove('hidden')}
+function showFeedback(kind,msg){$('#feedback').innerHTML=`<div class="feedback ${kind}">${msg}</div>`}
+function next(){if(idx<Q.length-1){idx++;render();window.scrollTo({top:$('#quiz').offsetTop-8,behavior:'smooth'});}else finish()}
+function finish(){
+  $('#quiz').classList.add('hidden');$('#report').classList.remove('hidden');$('#progress').style.width='100%';confetti();
+  const initial=firstTry.filter(Boolean).length, final=mastered.filter(Boolean).length;
+  const skills={};Q.forEach((q,i)=>{skills[q.skill]??={n:0,first:0,master:0};skills[q.skill].n++;if(firstTry[i])skills[q.skill].first++;if(mastered[i])skills[q.skill].master++});
+  const skillHTML=Object.entries(skills).map(([k,v])=>{const p=Math.round(v.first/v.n*100);return `<div class="skill-row"><b>${k}</b><div class="skill-track"><div class="skill-fill" style="width:${p}%"></div></div><span class="skill-pct">${p}%</span></div>`}).join('');
+  const weak=Object.entries(skills).filter(([k,v])=>v.first/v.n<.75).sort((a,b)=>a[1].first/a[1].n-b[1].first/b[1].n).map(x=>x[0]);
+  const name=$('#studentName').value.trim();
+  $('#report').innerHTML=`<h2>📊 Reporte de aprendizaje${name?' de '+escapeHtml(name):''}</h2><p>Separamos lo que lograste <b>sin ayuda</b> de lo que pudiste dominar después de una pista. Esto permite distinguir conocimiento previo de aprendizaje durante la actividad.</p><div class="report-grid"><div class="kpi"><div class="big">${initial}/50</div><small>Primer intento · ${Math.round(initial/50*100)}%</small></div><div class="kpi"><div class="big">${final}/50</div><small>Dominio final · ${Math.round(final/50*100)}%</small></div><div class="kpi"><div class="big">+${Math.max(0,final-initial)}</div><small>Reactivos recuperados con retroalimentación</small></div></div><h3>Desempeño inicial por habilidad</h3>${skillHTML}<div class="plan"><h3>🎯 Plan de refuerzo</h3>${weak.length?`<p>Conviene priorizar: <b>${weak.map(escapeHtml).join(', ')}</b>.</p><p>El botón siguiente genera una práctica nueva con ejercicios equivalentes, no copias exactas.</p>`:'<p>El desempeño inicial fue sólido en todas las habilidades. Conviene continuar con nuevos retos de mayor complejidad.</p>'}</div><div class="actions"><button class="primary" id="practiceBtn">Practicar lo que necesito</button><button class="ghost" id="restartBtn">Reiniciar evaluación</button><button class="ghost" id="printBtn">Imprimir reporte</button></div><div id="practiceArea"></div>`;
+  $('#practiceBtn').onclick=()=>startPractice(weak.length?weak:Object.keys(skills));
+  $('#restartBtn').onclick=()=>location.reload(); $('#printBtn').onclick=()=>window.print();
+}
+function startPractice(skills){
+  const area=$('#practiceArea'); const pool=[]; skills.forEach(s=>{for(let i=0;i<2;i++) pool.push(makeVariant(s))}); const set=shuffle(pool).slice(0,10); let p=0,score=0;
+  area.innerHTML='<div class="practice-box"><h3>🛠️ Práctica adaptativa</h3><div id="pBody"></div></div>'; renderP();
+  function renderP(){const q=set[p];$('#pBody').innerHTML=`<p><b>Reto ${p+1} de ${set.length}</b> · ${escapeHtml(q.skill)}</p><div class="q-title">${escapeHtml(q.q)}</div><input id="pInput" class="answer-input" placeholder="Escribe tu respuesta" autocomplete="off"><div id="pFeed"></div><div class="actions"><button id="pCheck" class="primary">Comprobar</button></div>`;$('#pCheck').onclick=()=>{const ok=answerOK(q,$('#pInput').value);if(ok){score++;$('#pFeed').innerHTML='<div class="feedback good">✅ Correcto. Buen trabajo.</div>'}else{$('#pFeed').innerHTML=`<div class="feedback bad">La respuesta es <b>${displayAnswer(q.a)}</b>. Observa el procedimiento y continúa.</div>`}$('#pCheck').disabled=true;setTimeout(()=>{p++;if(p<set.length)renderP();else $('#pBody').innerHTML=`<h3>Práctica terminada: ${score}/${set.length}</h3><p>${score>=8?'Ya muestras mayor dominio.':'Conviene repetir otra ronda y explicar en voz alta cómo resolviste cada ejercicio.'}</p><button class="secondary" onclick="document.getElementById('practiceBtn').click()">Nueva ronda</button>`},900)}}
+}
+function makeVariant(skill){
+  const r=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+  if(skill==='Sumas'){let a=r(120,1800),b=r(80,999);return{skill,q:`Calcula: ${a} + ${b}`,a:String(a+b)}}
+  if(skill==='Restas'){let a=r(500,1800),b=r(100,a-1);return{skill,q:`Calcula: ${a} − ${b}`,a:String(a-b)}}
+  if(skill==='Multiplicaciones'){let a=r(12,85),b=r(3,12);return{skill,q:`Calcula: ${a} × ${b}`,a:String(a*b)}}
+  if(skill==='Divisiones'){let b=r(3,12),c=r(4,30);return{skill,q:`Calcula: ${b*c} ÷ ${b}`,a:String(c)}}
+  if(skill==='Decimales'){let a=(r(500,1500)/10),b=(r(100,Math.floor(a*10)-1)/10);return{skill,q:`Calcula: ${a.toFixed(1)} − ${b.toFixed(1)}`,a:(a-b).toFixed(1)}}
+  if(skill==='Problemas matemáticos'){let n=r(4,12),each=r(12,35);return{skill,q:`Hay ${n} cajas con ${each} cuadernos en cada una. ¿Cuántos cuadernos hay en total?`,a:String(n*each)}}
+  if(skill==='Vocabulario'){const x=shuffle([['book','libro'],['pencil','lápiz'],['teacher','maestro'],['school','escuela'],['chair','silla'],['notebook','cuaderno']])[0];return{skill,q:`Escribe en inglés: “${x[1]}”`,a:x[0]}}
+  if(skill==='Expresiones escolares'){const x=shuffle([['¿Puedo entrar?','May I come in?'],['¿Puedo ir al baño?','May I go to the bathroom?'],['Buenos días','Good morning']])[0];return{skill,q:`Escribe en inglés: “${x[0]}”`,a:x[1]}}
+  if(skill==='Gramática básica'){const x=shuffle([['I ___ a student.','am'],['She ___ my friend.','is'],['This ___ my book.','is']])[0];return{skill,q:`Completa con una palabra: ${x[0]}`,a:x[1]}}
+  if(skill==='Comprensión en inglés'){return{skill,q:'Traduce al español: “Open your book.”',a:['abre tu libro','abre el libro']}}
+  return{skill:'Lectura breve',q:'Lee: “Sara has English class at 10:00.” ¿A qué hora tiene inglés?',a:['10:00','10']}
+}
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function speak(text){if(!('speechSynthesis' in window))return; speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=.82;speechSynthesis.speak(u)}
+function confetti(){const c=$('#confetti');for(let i=0;i<45;i++){const e=document.createElement('i');e.style.left=Math.random()*100+'vw';e.style.animationDelay=Math.random()*.8+'s';e.style.transform=`rotate(${Math.random()*180}deg)`;c.appendChild(e)}setTimeout(()=>c.innerHTML='',2600)}
+function displayAnswer(a){return escapeHtml(Array.isArray(a)?a[0]:a)}
+function escapeHtml(s){return String(s).replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[m]))}
+$('#startBtn').onclick=()=>{$('#start').classList.add('hidden');$('#quiz').classList.remove('hidden');render();window.scrollTo({top:$('#quiz').offsetTop-8,behavior:'smooth'})};
+</script>
+</body>
+</html>

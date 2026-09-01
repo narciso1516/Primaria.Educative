@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rosalía · Práctica de lectura y escritura</title>
+<style>
+:root{--azul:#4f7fe8;--azul2:#315fca;--verde:#4b9b63;--verde2:#2f7e73;--amarillo:#f3b51b;--tinta:#23364f;--gris:#64748b;--borde:#e5eaf1;--sombra:0 18px 42px rgba(35,54,79,.10)}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:linear-gradient(180deg,#f6fbff,#fffaf0);color:var(--tinta);min-height:100vh}
+button{font:inherit}.wrap{width:min(980px,calc(100% - 28px));margin:26px auto 42px}.hero,.card{background:#fff;border:1px solid var(--borde);border-radius:26px;box-shadow:var(--sombra)}
+.hero{padding:28px;margin-bottom:18px;background:linear-gradient(135deg,#fff 0%,#f7fbff 60%,#fff8e8 100%)}.kicker{display:inline-flex;background:#e8f0ff;color:var(--azul2);font-weight:800;border-radius:999px;padding:7px 12px;font-size:.86rem}
+h1{font-size:clamp(1.8rem,4vw,3rem);line-height:1.02;margin:12px 0 8px}.hero p,.sub{color:var(--gris)}.student{margin-top:15px;display:flex;flex-wrap:wrap;gap:9px}.pill{padding:8px 11px;border-radius:999px;border:1px solid var(--borde);font-weight:700;background:#fff}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.tab{border:0;border-radius:16px;padding:13px 10px;font-weight:900;color:#536273;background:#e9eef5;cursor:pointer}.tab.active{background:var(--azul);color:#fff}
+.card{padding:22px}.toprow{display:flex;justify-content:space-between;gap:10px;color:var(--gris);font-size:.94rem}.badge{background:#e8f0ff;color:var(--azul2);font-weight:900;border-radius:999px;padding:7px 11px}.progress{height:12px;background:#e9edf3;border-radius:99px;overflow:hidden;margin:8px 0 16px}.bar{height:100%;background:linear-gradient(90deg,var(--azul),var(--verde));width:0;transition:.3s}
+.instruction{border-left:4px solid var(--amarillo);background:#f7fafc;border-radius:15px;padding:12px 14px;margin-bottom:22px;color:#4d5a6e}.question{font-size:clamp(1.4rem,3vw,2rem);font-weight:950;line-height:1.15;margin:4px 0 8px}
+.options{display:grid;gap:10px}.opt{display:flex;gap:12px;width:100%;text-align:left;border:2px solid #dfe6ef;background:white;border-radius:16px;padding:13px 14px;cursor:pointer;font-weight:750;color:#334155}.opt.selected{border-color:var(--azul);background:#edf3ff}.letter{min-width:31px;height:31px;display:grid;place-items:center;border-radius:10px;background:#eef2f7;font-weight:950}.opt.selected .letter{background:var(--azul);color:#fff}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.btn{border:0;border-radius:14px;padding:12px 16px;font-weight:900;cursor:pointer}.primary{background:var(--azul);color:white}.secondary{background:var(--verde2);color:white}.ghost{background:#eef2f6;color:#425166}.warn{background:#fff4d9;color:#8a5a00}
+.feedback{display:none;margin-top:14px;padding:12px 14px;border-radius:14px;font-weight:800}.feedback.ok{display:block;background:#eaf7ed;color:#2f7a43}.feedback.no{display:block;background:#fff0f0;color:#a43a3a}
+.dictation-box{background:linear-gradient(135deg,#fffaf0,#f7fbff);border:1px dashed #cfd9e6;border-radius:20px;padding:18px}.notebook{font-size:3rem}.listen-count{font-size:.88rem;color:var(--gris);margin-top:9px}.finish-note{background:#fff4d9;border:1px solid #f4d58a;border-radius:18px;padding:16px;margin-top:14px}
+.report{display:none;margin-top:18px}.report.show{display:block}.scoregrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}.score{background:#f7fafc;border:1px solid var(--borde);border-radius:18px;padding:16px;text-align:center}.score strong{display:block;font-size:1.7rem;color:var(--azul2)}
+.result-list{display:grid;gap:8px}.result-row{display:grid;grid-template-columns:46px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--borde);border-radius:13px}.bad{color:#b13e3e;font-weight:900}footer{text-align:center;color:#718096;font-size:.88rem;margin:26px 0}
+@media(max-width:650px){.wrap{width:min(100% - 18px,980px);margin-top:12px}.hero,.card{padding:17px;border-radius:21px}.tabs{gap:6px}.tab{font-size:.83rem;padding:11px 6px}.toprow{flex-direction:column}.scoregrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="hero"><span class="kicker">📚 Práctica personalizada</span><h1>Rosalía · lectura y escritura</h1><p>3 bloques de 15 actividades. Lee, piensa, escucha y escribe con calma.</p><div class="student"><span class="pill">3.º de primaria</span><span class="pill">45 actividades</span><span class="pill">Práctica progresiva</span></div></section>
+<div class="tabs"><button class="tab active" id="tab0" onclick="goBlock(0)">Bloque 1</button><button class="tab" id="tab1" onclick="goBlock(1)">Bloque 2</button><button class="tab" id="tab2" onclick="goBlock(2)">Bloque 3</button></div>
+<main class="card"><div class="toprow"><span class="badge" id="counter"></span><span id="totalProgress"></span></div><div class="progress"><div class="bar" id="bar"></div></div><div id="exerciseArea"></div></main>
+<section class="card report" id="report"></section><footer>Práctica personalizada de lectura y escritura</footer>
+</div>
+<script>
+const blocks=[
+{title:"Bloque 1 · Leo y reconozco",instruction:"Lee con atención. Elige la respuesta correcta.",items:[
+{q:"¿Qué palabra completa mejor? “La ___ está sobre la mesa.”",o:["taza","caza","masa","pasa"],a:0},
+{q:"¿Cuál palabra empieza con la sílaba «pla»?",o:["pluma","plato","primo","blusa"],a:1},
+{q:"¿Cuál palabra contiene «br»?",o:["barco","banco","brazo","bata"],a:2},
+{q:"Completa: “El perro mueve la ___.”",o:["casa","cama","cara","cola"],a:3},
+{q:"¿Cuál palabra rima con «ratón»?",o:["balón","mesa","nube","lápiz"],a:0},
+{q:"¿Cuál palabra tiene tres sílabas?",o:["sol","camisa","pan","flor"],a:1},
+{q:"¿Cuál palabra empieza igual que «queso»?",o:["casa","gato","queja","mesa"],a:2},
+{q:"¿Cuál está escrita correctamente?",o:["escueala","escula","escuelaa","escuela"],a:3},
+{q:"Completa: “La mariposa tiene dos ___.”",o:["alas","olas","hilos","aros"],a:0},
+{q:"¿Cuál palabra termina en «-ito»?",o:["pelota","gatito","camino","pájaro"],a:1},
+{q:"¿Cuál palabra contiene la sílaba «tra»?",o:["taza","toro","trapo","tren"],a:2},
+{q:"¿Cuál palabra nombra algo que usamos para escribir?",o:["ventana","zapato","plato","lápiz"],a:3},
+{q:"¿Cuál palabra comienza con «ma»?",o:["mano","mono","mina","mundo"],a:0},
+{q:"¿Cuál palabra tiene cuatro sílabas?",o:["pan","mariposa","tren","flor"],a:1},
+{q:"Completa: “Rosalía lee un ___.”",o:["lago","lobo","libro","luna"],a:2}]},
+{title:"Bloque 2 · Pienso y completo",instruction:"Observa las sílabas y el sentido de la oración. Las respuestas correctas cambian de inciso.",items:[
+{q:"Completa: ca___ta",o:["mi","ma","mo","mu"],a:0},
+{q:"Completa: pe___ta",o:["la","lo","lu","le"],a:1},
+{q:"¿Qué sílaba falta en “za___to”?",o:["pe","pi","pa","po"],a:2},
+{q:"Completa: “El pájaro ___ en el árbol.”",o:["corre","nada","lee","canta"],a:3},
+{q:"¿Qué palabra se forma con «ca + mi + no»?",o:["camino","caminoo","comino","caminó"],a:0},
+{q:"¿Qué palabra se forma con «pe + lo + ta»?",o:["paleta","pelota","piloto","palota"],a:1},
+{q:"Completa: “Mi mamá cocina una ___.”",o:["sopo","supa","sopa","sape"],a:2},
+{q:"¿Cuál oración tiene sentido?",o:["El lápiz come.","La mesa corre.","El perro escribe.","La niña lee."],a:3},
+{q:"¿Cuál palabra se forma con «ven + ta + na»?",o:["ventana","ventena","vantana","ventanna"],a:0},
+{q:"Completa: “El gato toma ___.”",o:["lacha","leche","luchi","locha"],a:1},
+{q:"¿Cuál palabra se divide «co-ne-jo»?",o:["conejoa","conjo","conejo","conego"],a:2},
+{q:"Completa: “Hoy llevo mi ___ a la escuela.”",o:["nube","cielo","luna","mochila"],a:3},
+{q:"¿Cuál palabra tiene la sílaba «ti»?",o:["tigre","toro","taza","tela"],a:0},
+{q:"¿Cuál palabra tiene el sonido «ch»?",o:["casa","chile","sapo","gato"],a:1},
+{q:"¿Cuál opción completa “___tana” para formar «ventana»?",o:["van","vin","ven","von"],a:2}]},
+{title:"Bloque 3 · Escucho y escribo en mi libreta",instruction:"Escucha una palabra, escríbela en tu libreta y después avanza.",words:["camino","pelota","ventana","mochila","conejo","escuela","plato","brazo","trapo","queso","mariposa","gatito","cantar","leche","libro"]}
+];
+let block=0,idx=0;const answers=[Array(15).fill(null),Array(15).fill(null)],dictDone=Array(15).fill(false),listenUses=Array(15).fill(0);
+const $=id=>document.getElementById(id);const esc=s=>s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+function completed(){return answers[0].filter(x=>x!==null).length+answers[1].filter(x=>x!==null).length+dictDone.filter(Boolean).length}
+function updateTop(){ $("counter").textContent=`Bloque ${block+1} · ejercicio ${idx+1} de 15`; $("totalProgress").textContent=`Progreso total: ${completed()} / 45`; $("bar").style.width=`${completed()/45*100}%`; [0,1,2].forEach(i=>$("tab"+i).classList.toggle("active",i===block))}
+function goBlock(b){block=b;idx=0;$("report").classList.remove("show");render()}
+function render(){updateTop();const area=$("exerciseArea"),B=blocks[block];
+if(block<2){const it=B.items[idx],sel=answers[block][idx];area.innerHTML=`<div class="instruction"><b>${B.title}</b><br>${B.instruction}</div><div class="question">${esc(it.q)}</div><p class="sub">Selecciona una respuesta.</p><div class="options">${it.o.map((x,i)=>`<button class="opt ${sel===i?'selected':''}" onclick="choose(${i})"><span class="letter">${'ABCD'[i]}</span><span>${esc(x)}</span></button>`).join('')}</div><div id="fb" class="feedback"></div><div class="actions"><button class="btn primary" onclick="review()">Revisar</button>${idx>0?'<button class="btn ghost" onclick="prev()">Anterior</button>':''}<button class="btn secondary" onclick="finish()">Terminar y ver reporte</button></div>`}
+else{area.innerHTML=`<div class="instruction"><b>${B.title}</b><br>Rosalía: escucha con atención. <strong>Escribe la palabra en tu libreta</strong>. No la escribas en la pantalla.</div><div class="question">✏️ Palabra ${idx+1} de 15</div><p class="sub">Escucha, piensa, escribe y revisa tu letra.</p><div class="dictation-box"><div class="notebook">📓</div><b>1.</b> Presiona Escuchar.<br><b>2.</b> Escríbela en tu libreta sin verla escrita.<br><b>3.</b> Revisa que no falten letras.<div class="actions"><button class="btn warn" onclick="speakWord()">🔊 Escuchar</button><button class="btn primary" onclick="dictNext()">✓ Ya la escribí · siguiente</button>${idx>0?'<button class="btn ghost" onclick="dictPrev()">Anterior</button>':''}</div><div class="listen-count" id="listenCount">${listenUses[idx]} de 3 escuchas usadas.</div></div><div class="finish-note"><b>Al terminar:</b> toma una fotografía clara de tu libreta y envíasela a tu maestro.</div><div class="actions"><button class="btn secondary" onclick="finish()">Terminar y ver reporte</button></div>`}}
+function choose(i){answers[block][idx]=i;render()} function prev(){if(idx>0){idx--;render()}}
+function review(){const it=blocks[block].items[idx],sel=answers[block][idx],fb=$("fb");if(sel===null){fb.className="feedback no";fb.textContent="Primero elige una respuesta.";return}if(sel===it.a){fb.className="feedback ok";fb.textContent="✓ Muy bien. Continúa.";setTimeout(()=>{if(idx<14){idx++;render()}},550)}else{fb.className="feedback no";fb.textContent="Aún no. Lee otra vez y vuelve a intentarlo."}}
+function speakWord(){if(listenUses[idx]>=3){$("listenCount").textContent="Ya usaste las 3 escuchas. Ahora escribe con calma.";return}listenUses[idx]++;const u=new SpeechSynthesisUtterance(blocks[2].words[idx]);u.lang="es-MX";u.rate=.72;speechSynthesis.cancel();speechSynthesis.speak(u);$("listenCount").textContent=`${listenUses[idx]} de 3 escuchas usadas.`}
+function dictNext(){if(listenUses[idx]===0){alert("Primero escucha la palabra.");return}dictDone[idx]=true;if(idx<14){idx++;render()}else{showDictFinish()}}
+function dictPrev(){if(idx>0){idx--;render()}}
+function showDictFinish(){$("exerciseArea").innerHTML=`<div class="instruction"><b>¡Terminaste el dictado!</b><br>Ahora haz el cierre de aprendizaje.</div><div class="question">📸 Envía evidencia a tu maestro</div><div class="finish-note"><b>Rosalía:</b> revisa que tengas las 15 palabras numeradas. Toma una fotografía clara y completa de tu libreta y <b>envíasela a tu maestro</b>.</div><div style="line-height:2;margin-top:14px">☐ Escribí las 15 palabras.<br>☐ Revisé que no me faltaran letras.<br>☐ Mi letra se puede leer.<br>☐ Tomé una foto clara.</div><div class="actions"><button class="btn primary" onclick="showCorrections()">Ver palabras para autocorregir</button><button class="btn secondary" onclick="finish()">Ver reporte final</button></div>`;updateTop()}
+function showCorrections(){$("exerciseArea").innerHTML=`<div class="instruction"><b>Autocorrección</b><br>Compara tu libreta. Si una palabra está diferente, corrígela con otro color sin borrar tu primer intento.</div><div class="question">Lista correcta</div><ol style="columns:2;line-height:1.9;font-weight:800">${blocks[2].words.map(w=>`<li>${w}</li>`).join('')}</ol><div class="finish-note"><b>Después:</b> toma la foto de tu trabajo y envíala a tu maestro.</div><div class="actions"><button class="btn secondary" onclick="finish()">Ver reporte final</button></div>`}
+function finish(){const b1=blocks[0].items.reduce((s,it,i)=>s+(answers[0][i]===it.a),0),b2=blocks[1].items.reduce((s,it,i)=>s+(answers[1][i]===it.a),0),d=dictDone.filter(Boolean).length,wrong=[];[0,1].forEach(b=>blocks[b].items.forEach((it,i)=>{if(answers[b][i]!==null&&answers[b][i]!==it.a)wrong.push({b,i,q:it.q})}));const r=$("report");r.classList.add("show");r.innerHTML=`<span class="kicker">📊 Reporte de progreso</span><h2>Resultados de Rosalía</h2><p class="sub">Los bloques 1 y 2 se califican automáticamente. El bloque 3 se revisa en la libreta con la fotografía.</p><div class="scoregrid"><div class="score"><strong>${b1}/15</strong>Bloque 1</div><div class="score"><strong>${b2}/15</strong>Bloque 2</div><div class="score"><strong>${d}/15</strong>Dictados realizados</div></div><div class="instruction"><b>Objetivo del bloque 3</b><br>Relacionar sonido y escritura, mejorar atención auditiva y revisar la escritura manuscrita.</div>${wrong.length?`<h3>Actividades para volver a practicar</h3><div class="result-list">${wrong.map(x=>`<div class="result-row"><span class="bad">✕</span><span>${esc(x.q)}</span><span>Bloque ${x.b+1}</span></div>`).join('')}</div>`:'<div class="feedback ok">✓ No hay respuestas incorrectas registradas en los bloques 1 y 2.</div>'}<div class="actions"><button class="btn ghost" onclick="window.scrollTo({top:0,behavior:'smooth'})">Volver arriba</button></div>`;r.scrollIntoView({behavior:"smooth"})}
+render();
+</script>
+</body></html>

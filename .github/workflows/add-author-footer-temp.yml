@@ -1,0 +1,111 @@
+name: Aplicar footer de autor
+
+on:
+  push:
+    paths:
+      - '.github/workflows/add-author-footer-temp.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-footer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Agregar únicamente footer de autor
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          path = Path('Fracciones_Decimales_100_Ejercicios_Paleta_Aplicada.html')
+          text = path.read_text(encoding='utf-8')
+
+          css = r'''
+          /* ===== Footer del autor: estilos aislados ===== */
+          .author-footer{
+            margin-top:22px;
+            background:linear-gradient(135deg,var(--navy),var(--blue));
+            color:#fff;
+            border-radius:22px;
+            padding:24px;
+            box-shadow:0 12px 30px rgba(20,54,110,.14);
+            border:1px solid rgba(255,255,255,.12);
+          }
+          .author-footer__inner{max-width:820px;margin:0 auto;text-align:center}
+          .author-footer__label{margin:0 0 6px;font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--yellow)}
+          .author-footer__name{margin:0;font-size:clamp(21px,3vw,28px);font-weight:900;line-height:1.25}
+          .author-footer__description{margin:12px auto 0;max-width:760px;color:#F5FBFC;line-height:1.65;font-size:15px}
+          .author-footer__phrase{margin:14px 0 0;color:var(--blue2);font-size:13px;font-style:italic}
+          .author-footer__button{
+            display:inline-flex;align-items:center;justify-content:center;
+            margin-top:18px;padding:11px 18px;border-radius:13px;
+            background:var(--yellow);color:var(--ink);text-decoration:none;
+            font-weight:900;border:1px solid rgba(255,255,255,.22);
+            transition:transform .16s ease,box-shadow .16s ease,filter .16s ease;
+          }
+          .author-footer__button:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.14);filter:brightness(1.02)}
+          .author-footer__button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+          .author-footer__copyright{margin:16px 0 0;padding-top:14px;border-top:1px solid rgba(255,255,255,.18);color:var(--blue2);font-size:12px}
+          @media(max-width:700px){
+            .author-footer{padding:20px 16px;border-radius:18px}
+            .author-footer__description{font-size:14px}
+            .author-footer__button{width:100%;max-width:280px}
+          }
+          '''.strip()
+
+          footer = r'''
+          <section class="author-footer" aria-label="Información del autor">
+            <div class="author-footer__inner">
+              <p class="author-footer__label">AUTOR</p>
+              <p class="author-footer__name">Luis Alberto Antonio Narciso</p>
+              <p class="author-footer__description">Ingeniero en Electrónica y profesional de Quality Assurance, automatización de pruebas y tecnología educativa. Desarrolla experiencias web interactivas orientadas al aprendizaje, combinando educación, tecnología, diseño y herramientas digitales.</p>
+              <p class="author-footer__phrase">“Recurso diseñado y desarrollado por Luis Alberto Antonio Narciso”.</p>
+              <a class="author-footer__button" href="https://narciso1516.github.io/narcisotesting.com/" target="_blank" rel="noopener noreferrer">Conocer al autor</a>
+              <p class="author-footer__copyright">© 2026 Luis Alberto Antonio Narciso</p>
+            </div>
+          </section>
+          '''.strip()
+
+          if 'class="author-footer"' not in text:
+              if '</style>' not in text:
+                  raise SystemExit('No se encontró </style>')
+              text = text.replace('</style>', css + '\n</style>', 1)
+
+              existing_footer = '<footer style="text-align:center;color:#65758B;font-size:13px;margin-top:20px">Material educativo interactivo · Fracciones y decimales · 1.º de secundaria</footer>'
+              if existing_footer not in text:
+                  raise SystemExit('No se encontró el footer educativo original')
+              text = text.replace(existing_footer, existing_footer + '\n' + footer, 1)
+              path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Confirmar que la lógica educativa permanece
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+          text = Path('Fracciones_Decimales_100_Ejercicios_Paleta_Aplicada.html').read_text(encoding='utf-8')
+          assert 'const BANK=[' in text
+          assert len(re.findall(r'"id":\s*\d+', text)) == 100
+          assert 'renderQuestion();' in text
+          assert 'class="author-footer"' in text
+          assert 'target="_blank"' in text
+          assert 'rel="noopener noreferrer"' in text
+          print('Validación correcta: 100 ejercicios y footer presentes.')
+          PY
+
+      - name: Guardar cambio y retirar parche temporal
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/add-author-footer-temp.yml
+          git add Fracciones_Decimales_100_Ejercicios_Paleta_Aplicada.html
+          git commit -m "Agregar footer profesional del autor"
+          git push

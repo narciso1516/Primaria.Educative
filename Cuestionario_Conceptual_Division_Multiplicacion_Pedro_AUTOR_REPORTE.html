@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pedro · División y Multiplicación · 25 preguntas</title>
+<style>
+  :root{
+    --bg:#f6f9ff;
+    --card:#ffffff;
+    --ink:#17324d;
+    --muted:#60758a;
+    --blue:#2f80ed;
+    --cyan:#56ccf2;
+    --green:#27ae60;
+    --red:#eb5757;
+    --yellow:#f2c94c;
+    --purple:#9b51e0;
+    --line:#dce8f5;
+    --shadow:0 16px 40px rgba(35,73,117,.12);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,ui-rounded,"Nunito",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:
+    radial-gradient(circle at 10% 5%,rgba(86,204,242,.22),transparent 28%),
+    radial-gradient(circle at 90% 10%,rgba(155,81,224,.12),transparent 26%),
+    linear-gradient(180deg,#fafdff 0%,var(--bg) 100%);color:var(--ink);min-height:100vh}
+  .wrap{width:min(1080px,calc(100% - 24px));margin:24px auto 48px}
+  .hero{background:linear-gradient(135deg,#163a64 0%,#245f9e 55%,#2f80ed 100%);color:white;border-radius:28px;padding:28px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .hero:after{content:"÷ ×";position:absolute;right:24px;top:4px;font-size:92px;font-weight:900;opacity:.09;letter-spacing:8px}
+  .kicker{font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:.8rem;opacity:.85}
+  h1{margin:7px 0 8px;font-size:clamp(1.8rem,4vw,3.15rem);line-height:1.03}
+  .hero p{margin:0;max-width:760px;line-height:1.55;color:#eaf5ff}
+  .status{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;margin:18px 0 0}
+  .progressShell{height:13px;background:rgba(255,255,255,.22);border-radius:999px;overflow:hidden}
+  .progressBar{height:100%;width:0;background:linear-gradient(90deg,#8ee3ff,#fff29a);border-radius:999px;transition:width .35s ease}
+  .pill{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);padding:8px 12px;border-radius:999px;font-weight:800;white-space:nowrap}
+
+  .stage{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);padding:clamp(18px,4vw,34px)}
+  .questionHead{display:flex;gap:14px;align-items:flex-start}
+  .num{flex:0 0 auto;width:46px;height:46px;display:grid;place-items:center;border-radius:15px;background:#e8f3ff;color:var(--blue);font-weight:900;font-size:1.1rem;border:1px solid #cfe4fb}
+  .qtitle{font-size:clamp(1.2rem,2.7vw,1.65rem);line-height:1.35;font-weight:900;margin:2px 0 0}
+  .visual{margin:24px auto 6px;min-height:40px;display:grid;place-items:center}
+
+  .divisionCard{width:min(520px,100%);padding:22px;border-radius:24px;background:linear-gradient(180deg,#f7fbff,#edf6ff);border:2px solid #d7eaff;display:grid;place-items:center}
+  .divisionHouse{position:relative;width:250px;height:155px;margin:4px auto 8px}
+  .roof{position:absolute;left:67px;top:4px;width:122px;height:122px;border-left:8px solid #ff7a59;border-top:8px solid #ff7a59;transform:rotate(45deg);border-radius:5px 0 0 0}
+  .bracket{position:absolute;left:74px;top:58px;width:145px;height:78px;border-left:7px solid #17324d;border-top:7px solid #17324d;border-radius:16px 0 0 0}
+  .dividendSpot,.divisorSpot,.quotientSpot,.remainderSpot{position:absolute;font-weight:1000;color:#17324d;background:white;border:2px dashed #9bbbd8;border-radius:12px;min-width:62px;text-align:center;padding:7px 10px;box-shadow:0 6px 14px rgba(35,73,117,.08)}
+  .dividendSpot{left:112px;top:82px}
+  .divisorSpot{left:5px;top:82px}
+  .quotientSpot{left:128px;top:18px}
+  .remainderSpot{left:132px;top:137px}
+  .tagline{font-size:.88rem;color:var(--muted);text-align:center;margin-top:8px}
+
+  .formula{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:20px;border-radius:22px;background:#fffaf0;border:2px solid #ffe5a3;font-weight:1000;font-size:clamp(1.05rem,3vw,1.4rem)}
+  .formula span{padding:9px 12px;border-radius:12px;background:white;border:1px solid #f5d783;box-shadow:0 4px 10px rgba(166,122,15,.08)}
+  .miniGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(620px,100%)}
+  .miniGrid div{background:#f7fbff;border:1px solid #d9e9f8;border-radius:16px;padding:14px;text-align:center;font-weight:900}
+
+  .options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:22px}
+  .option{appearance:none;border:2px solid #d8e5f1;background:#fff;color:var(--ink);border-radius:18px;padding:16px;text-align:left;font:inherit;font-weight:800;cursor:pointer;min-height:62px;transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease, background .16s ease;position:relative}
+  .option:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(47,128,237,.11);border-color:#a9cdf4}
+  .option:focus-visible{outline:4px solid rgba(47,128,237,.2);outline-offset:2px}
+  .option.selected{border-color:var(--blue);background:#edf6ff}
+  .option.correct{border-color:#7ed09b;background:#edfff3}
+  .option.wrong{border-color:#f3a0a0;background:#fff0f0}
+  .option[disabled]{cursor:default;transform:none}
+  .feedback{display:none;margin-top:18px;padding:16px 18px;border-radius:18px;line-height:1.5;font-weight:700}
+  .feedback.show{display:block;animation:pop .24s ease}
+  .feedback.good{background:#edfff3;border:1px solid #b7ebc8;color:#176b35}
+  .feedback.bad{background:#fff3f3;border:1px solid #f4bcbc;color:#993434}
+  @keyframes pop{from{transform:scale(.985);opacity:.35}to{transform:scale(1);opacity:1}}
+  .actions{display:flex;justify-content:space-between;gap:12px;margin-top:22px;align-items:center}
+  .btn{border:0;border-radius:15px;padding:13px 18px;font:inherit;font-weight:900;cursor:pointer;transition:transform .15s ease,opacity .15s ease}
+  .btn:hover{transform:translateY(-1px)}
+  .btn.primary{background:var(--blue);color:white;box-shadow:0 8px 18px rgba(47,128,237,.24)}
+  .btn.secondary{background:#eef4fa;color:#31516d}
+  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+  .hint{font-size:.92rem;color:var(--muted);font-weight:700}
+
+  .report{display:none;margin-top:22px;background:white;border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);padding:28px}
+  .report.show{display:block}
+  .scoreRing{width:145px;height:145px;border-radius:50%;display:grid;place-items:center;margin:auto;background:conic-gradient(var(--green) 0deg,#e8eef4 0deg);position:relative}
+  .scoreRing:after{content:"";position:absolute;inset:13px;border-radius:50%;background:white}
+  .scoreText{position:relative;z-index:1;text-align:center;font-weight:1000;font-size:1.65rem}
+  .scoreText small{display:block;font-size:.76rem;color:var(--muted)}
+  .reportGrid{display:grid;grid-template-columns:160px 1fr;gap:26px;align-items:center}
+  .bars{display:grid;gap:12px}
+  .barRow{display:grid;grid-template-columns:180px 1fr 54px;gap:10px;align-items:center;font-weight:800}
+  .barTrack{height:11px;background:#edf2f7;border-radius:999px;overflow:hidden}
+  .barFill{height:100%;background:linear-gradient(90deg,#56ccf2,#2f80ed);width:0;border-radius:999px}
+  .recommendation{margin-top:20px;padding:17px;border-radius:18px;background:#fff9e8;border:1px solid #f5dfa2;font-weight:800;line-height:1.5}
+  .footer{text-align:center;margin-top:18px;color:#7890a5;font-size:.88rem}
+
+  /* Footer del autor: estilos aislados para no interferir con la actividad */
+  .laa-author-footer{width:min(1080px,calc(100% - 24px));margin:0 auto 30px;padding:0 0 18px}
+  .laa-author-card{background:linear-gradient(135deg,#163a64 0%,#245f9e 55%,#2f80ed 100%);color:#fff;border-radius:24px;padding:24px 26px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.16)}
+  .laa-author-grid{display:grid;grid-template-columns:1fr auto;gap:22px;align-items:center}
+  .laa-author-label{font-size:.76rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;opacity:.78;margin-bottom:5px}
+  .laa-author-name{font-size:1.25rem;font-weight:1000;line-height:1.25;margin:0 0 9px}
+  .laa-author-description{margin:0;max-width:780px;line-height:1.55;color:#eaf5ff;font-size:.94rem}
+  .laa-author-quote{margin:12px 0 0;font-size:.86rem;color:#dcecff;font-style:italic}
+  .laa-author-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;background:#fff;color:#245f9e;border-radius:14px;padding:12px 16px;font-weight:900;white-space:nowrap;box-shadow:0 7px 16px rgba(0,0,0,.12);transition:transform .15s ease,box-shadow .15s ease}
+  .laa-author-link:hover{transform:translateY(-1px);box-shadow:0 10px 20px rgba(0,0,0,.16)}
+  .laa-author-link:focus-visible{outline:4px solid rgba(255,255,255,.35);outline-offset:3px}
+  .laa-author-copy{margin-top:14px;padding-top:13px;border-top:1px solid rgba(255,255,255,.18);font-size:.8rem;color:#dcecff}
+
+  .reportMeta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+  .reportMetaCard{background:#f7fbff;border:1px solid #d9e9f8;border-radius:16px;padding:12px;text-align:center}
+  .reportMetaCard strong{display:block;font-size:1.05rem;margin-top:3px}
+  .passBadge{display:inline-flex;align-items:center;justify-content:center;padding:9px 14px;border-radius:999px;font-weight:1000;margin:0 auto 16px}
+  .passBadge.pass{background:#edfff3;border:1px solid #b7ebc8;color:#176b35}
+  .passBadge.fail{background:#fff3f3;border:1px solid #f4bcbc;color:#993434}
+  .reportActions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .reportNote{margin-top:12px;text-align:center;color:var(--muted);font-size:.88rem;font-weight:700}
+
+  @media(max-width:760px){
+    .status{grid-template-columns:1fr 1fr}.progressShell{grid-column:1/-1;grid-row:2}.options{grid-template-columns:1fr}.reportGrid{grid-template-columns:1fr}.barRow{grid-template-columns:1fr}.barRow .barTrack{grid-column:1/-1}.barRow .pct{justify-self:start}.hero{padding:23px}.stage{border-radius:22px}.divisionHouse{transform:scale(.9);margin-top:-4px;margin-bottom:-4px}.laa-author-grid{grid-template-columns:1fr}.laa-author-link{width:100%}.reportMeta{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="kicker">Repaso conceptual · 1.º de secundaria</div>
+    <h1>Pedro: División y Multiplicación</h1>
+    <p>25 preguntas para reconocer las partes de una división, entender la “casita”, saber qué significa el residuo, identificar factores y producto, y comprender cómo se comprueba una operación.</p>
+    <div class="status">
+      <div class="progressShell"><div class="progressBar" id="progressBar"></div></div>
+      <div class="pill" id="counter">Pregunta 1 de 25</div>
+      <div class="pill" id="scorePill">Aciertos: 0</div>
+    </div>
+  </section>
+
+  <main class="stage" id="stage">
+    <div class="questionHead">
+      <div class="num" id="qNum">1</div>
+      <div class="qtitle" id="qText"></div>
+    </div>
+    <div class="visual" id="visual"></div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="actions">
+      <button class="btn secondary" id="restartBtn" type="button">Reiniciar</button>
+      <span class="hint" id="hint">Selecciona una respuesta.</span>
+      <button class="btn primary" id="nextBtn" type="button" disabled>Siguiente</button>
+    </div>
+  </main>
+
+  <section class="report" id="report">
+    <h2 style="margin-top:0;text-align:center">Reporte de comprensión</h2>
+    <div class="reportGrid">
+      <div class="scoreRing" id="scoreRing"><div class="scoreText"><span id="finalScore">0%</span><small id="finalCount">0 de 25</small></div></div>
+      <div class="bars" id="categoryBars"></div>
+    </div>
+    <div id="passBadge" class="passBadge fail">Evaluación pendiente</div>
+    <div class="reportMeta" id="reportMeta"></div>
+    <div class="recommendation" id="recommendation"></div>
+    <div class="reportActions">
+      <button class="btn secondary" id="copyReportBtn" type="button">Copiar reporte</button>
+      <button class="btn secondary" id="downloadReportBtn" type="button">Descargar reporte</button>
+      <button class="btn primary" id="againBtn" type="button">Resolver otra vez</button>
+    </div>
+    <div class="reportNote" id="reportNote">Para aprobar se requiere al menos 80% (20 de 25 aciertos).</div>
+  </section>
+
+  <div class="footer">Material interactivo de comprensión matemática · División y multiplicación</div>
+</div>
+
+<footer class="laa-author-footer" aria-label="Información del autor">
+  <div class="laa-author-card">
+    <div class="laa-author-grid">
+      <div>
+        <div class="laa-author-label">Autor</div>
+        <h2 class="laa-author-name">Luis Alberto Antonio Narciso</h2>
+        <p class="laa-author-description">Ingeniero en Electrónica y profesional de Quality Assurance, automatización de pruebas y tecnología educativa. Desarrolla experiencias web interactivas orientadas al aprendizaje, combinando educación, tecnología, diseño y herramientas digitales.</p>
+        <p class="laa-author-quote">“Recurso diseñado y desarrollado por Luis Alberto Antonio Narciso”.</p>
+      </div>
+      <a class="laa-author-link" href="https://narciso1516.github.io/narcisotesting.com/" target="_blank" rel="noopener noreferrer">Conocer al autor</a>
+    </div>
+    <div class="laa-author-copy">© <span id="laaCurrentYear"></span> Luis Alberto Antonio Narciso</div>
+  </div>
+</footer>
+
+<script>
+const visualHouse = (labels=false) => `
+<div class="divisionCard">
+  <div class="divisionHouse">
+    <div class="roof"></div><div class="bracket"></div>
+    <div class="divisorSpot">${labels?'DIVISOR':'AFUERA'}</div>
+    <div class="dividendSpot">${labels?'DIVIDENDO':'DENTRO'}</div>
+    <div class="quotientSpot">${labels?'COCIENTE':'ARRIBA'}</div>
+    <div class="remainderSpot">${labels?'RESIDUO':'AL FINAL'}</div>
+  </div>
+  <div class="tagline">Observa la posición de cada parte en la división.</div>
+</div>`;
+
+const formulaVisual = `<div class="formula"><span>Divisor</span> × <span>Cociente</span> + <span>Residuo</span> = <span>Dividendo</span></div>`;
+const multVisual = `<div class="miniGrid"><div>FACTOR</div><div>× FACTOR</div><div>= PRODUCTO</div></div>`;
+const placeVisual = `<div class="miniGrid"><div>Centenas<br>↓<br>Centenas</div><div>Decenas<br>↓<br>Decenas</div><div>Unidades<br>↓<br>Unidades</div></div>`;
+
+const questions = [
+ {cat:'Partes de la división',q:'¿Para qué sirve una división?',o:['Para repartir o agrupar una cantidad en partes iguales','Solo para sumar números grandes','Para cambiar siempre un número decimal a entero','Para ordenar números de menor a mayor'],a:0,e:'Dividir permite repartir o agrupar una cantidad en partes iguales o saber cuántas veces cabe una cantidad en otra.'},
+ {cat:'Partes de la división',q:'En la “casita” de la división, ¿cómo se llama el número que va dentro?',v:visualHouse(false),o:['Dividendo','Divisor','Cociente','Residuo'],a:0,e:'El número que está dentro de la casita es el dividendo: la cantidad que se va a dividir.'},
+ {cat:'Partes de la división',q:'En la “casita” de la división, ¿cómo se llama el número que va afuera, a la izquierda?',v:visualHouse(false),o:['Divisor','Dividendo','Cociente','Producto'],a:0,e:'El número de afuera es el divisor: indica entre cuánto se divide o en cuántos grupos se reparte.'},
+ {cat:'Partes de la división',q:'¿Cómo se llama el resultado principal que se escribe arriba de la casita?',v:visualHouse(false),o:['Cociente','Residuo','Dividendo','Factor'],a:0,e:'El resultado principal de una división se llama cociente y normalmente se coloca arriba.'},
+ {cat:'Partes de la división',q:'¿Qué es el residuo de una división?',o:['La cantidad que sobra después de repartir','El número que va dentro de la casita','El resultado de una multiplicación','El número por el que dividimos'],a:0,e:'El residuo es lo que sobra cuando la división no es exacta.'},
+ {cat:'Partes de la división',q:'¿Dónde identificamos el residuo cuando terminamos una división larga?',v:visualHouse(false),o:['En la parte final, después de las restas','Arriba, como si fuera el cociente','Afuera, en el lugar del divisor','Antes de comenzar la división'],a:0,e:'El residuo aparece al final del procedimiento, después de las restas y de bajar las cifras necesarias.'},
+ {cat:'Partes de la división',q:'Si una división termina con residuo 0, ¿qué significa?',o:['Que la división es exacta y no sobra nada','Que el divisor vale 0','Que el cociente está equivocado','Que falta hacer una multiplicación'],a:0,e:'Residuo 0 significa que no sobró ninguna cantidad: la división es exacta.'},
+ {cat:'Partes de la división',q:'Si al terminar una división queda un número diferente de 0, ese número representa…',o:['Lo que sobró después de dividir','El nuevo divisor','El producto de la operación','La cantidad que debemos sumar al divisor'],a:0,e:'Ese número es el residuo, es decir, la cantidad que no pudo repartirse completamente.'},
+ {cat:'Partes de la división',q:'¿Cómo reconoces rápidamente el dividendo en una división de casita?',v:visualHouse(false),o:['Es el número que está dentro de la casita','Es el número que está arriba','Es el número que siempre está al final','Es el número que está afuera a la izquierda'],a:0,e:'En la forma de casita, el dividendo se reconoce porque está dentro.'},
+ {cat:'Partes de la división',q:'¿Cómo reconoces rápidamente el divisor en una división de casita?',v:visualHouse(false),o:['Está afuera, a la izquierda de la casita','Está dentro de la casita','Está arriba de la casita','Está siempre debajo del residuo'],a:0,e:'El divisor se coloca afuera, normalmente a la izquierda de la casita.'},
+ {cat:'Partes de la división',q:'¿Cómo reconoces el cociente?',v:visualHouse(false),o:['Es el resultado que se escribe arriba','Es lo que sobra al final','Es el número que va dentro','Es el número que siempre se resta primero'],a:0,e:'El cociente es el resultado principal de la división y se escribe arriba.'},
+ {cat:'Procedimiento de división',q:'En una división larga, ¿para qué sirven las restas que aparecen debajo del dividendo?',o:['Para saber cuánto queda después de quitar lo que ya fue repartido','Para cambiar el divisor por otro número','Para convertir el cociente en residuo','Para comprobar una multiplicación'],a:0,e:'Las restas muestran cuánto queda después de retirar la cantidad que ya quedó representada por una parte del cociente.'},
+ {cat:'Procedimiento de división',q:'Después de una resta en una división larga, ¿qué se hace normalmente si aún quedan cifras del dividendo?',o:['Se baja la siguiente cifra para continuar','Se cambia el divisor','Se borra el cociente','Se multiplica el residuo por sí mismo'],a:0,e:'Cuando todavía hay cifras por utilizar, se baja la siguiente cifra del dividendo para continuar el procedimiento.'},
+ {cat:'Comprobación',q:'¿Qué significa comprobar una división?',v:formulaVisual,o:['Verificar con otra operación que el resultado obtenido es correcto','Hacer la misma división dos veces sin comparar resultados','Cambiar el divisor por el residuo','Sumar todos los números de la división'],a:0,e:'Comprobar significa verificar que las partes de la división reconstruyen correctamente el dividendo.'},
+ {cat:'Comprobación',q:'Para comprobar una división, ¿qué dos partes se multiplican primero?',v:formulaVisual,o:['Divisor × Cociente','Dividendo × Residuo','Cociente × Residuo','Dividendo × Divisor'],a:0,e:'La comprobación comienza multiplicando el divisor por el cociente.'},
+ {cat:'Comprobación',q:'Después de multiplicar divisor × cociente, ¿qué hacemos con el residuo?',v:formulaVisual,o:['Lo sumamos al resultado de la multiplicación','Lo multiplicamos otra vez por el divisor','Lo colocamos como nuevo cociente','Lo ignoramos siempre'],a:0,e:'Si existe residuo, se suma al producto divisor × cociente.'},
+ {cat:'Comprobación',q:'¿Qué debemos obtener al final de divisor × cociente + residuo?',v:formulaVisual,o:['El dividendo','El divisor','El cociente','El producto de los factores'],a:0,e:'Si la división está bien hecha, la comprobación debe reconstruir exactamente el dividendo.'},
+ {cat:'Comprobación',q:'Completa la idea: Divisor × ______ + Residuo = Dividendo.',v:formulaVisual,o:['Cociente','Dividendo','Residuo','Factor'],a:0,e:'La regla de comprobación usa divisor × cociente y después suma el residuo.'},
+ {cat:'Comprobación',q:'Si al hacer la comprobación no obtenemos el dividendo, ¿qué nos indica?',o:['Que debemos revisar porque hay un error en la división o en la comprobación','Que la división es automáticamente exacta','Que el residuo siempre debe ser 0','Que el divisor debe convertirse en producto'],a:0,e:'Si la comprobación no reconstruye el dividendo, hay que revisar el procedimiento o los datos usados.'},
+ {cat:'Multiplicación',q:'¿Cómo se llaman los números que se multiplican entre sí?',v:multVisual,o:['Factores','Cocientes','Residuos','Divisores'],a:0,e:'Cada número que participa en una multiplicación se llama factor.'},
+ {cat:'Multiplicación',q:'¿Cómo se llama el resultado de una multiplicación?',v:multVisual,o:['Producto','Cociente','Dividendo','Residuo'],a:0,e:'El resultado de multiplicar dos o más factores se llama producto.'},
+ {cat:'Multiplicación',q:'Cuando acomodamos una multiplicación vertical con números enteros, ¿por qué alineamos unidades con unidades, decenas con decenas y centenas con centenas?',v:placeVisual,o:['Para respetar el valor posicional de cada cifra','Para que todos los números tengan el mismo tamaño','Para convertir la multiplicación en división','Para eliminar la necesidad de sumar productos parciales'],a:0,e:'La alineación conserva el valor posicional: unidades con unidades, decenas con decenas, y así sucesivamente.'},
+ {cat:'Decimales',q:'Cuando multiplicamos números con punto decimal, ¿qué debemos observar para colocar correctamente el punto en el producto?',o:['La cantidad total de cifras decimales de los factores','Solo el número de cifras enteras del primer factor','La posición del divisor','El residuo de una división anterior'],a:0,e:'En una multiplicación decimal se cuentan las cifras decimales de ambos factores para ubicar el punto del producto.'},
+ {cat:'Decimales',q:'Si un factor tiene 2 cifras decimales y el otro tiene 1 cifra decimal, ¿qué debe ocurrir con el producto?',o:['Debe tener 3 cifras decimales antes de simplificar ceros innecesarios','Debe tener siempre 1 cifra decimal','Debe quedar sin punto decimal','Debe tener tantas cifras decimales como cifras enteras'],a:0,e:'Se suman las cifras decimales de los factores: 2 + 1 = 3 posiciones decimales en el producto antes de eliminar ceros finales que no cambien el valor.'},
+ {cat:'Comprobación',q:'¿Cuál opción describe mejor la idea de comprobar una multiplicación?',o:['Usar la operación inversa: dividir el producto entre un factor y verificar que se obtiene el otro','Sumar los dos factores y esperar obtener el producto','Restar el producto al primer factor','Cambiar el punto decimal de lugar sin calcular'],a:0,e:'Una multiplicación puede verificarse usando la operación inversa: si producto ÷ un factor da el otro factor, la relación es consistente.'}
+];
+
+const PASS_PERCENT=80;
+let current=0, correct=0, answered=false, attempt=1;
+let results=[];
+let lastReportText='';
+let attemptStartedAt=new Date();
+const qText=document.getElementById('qText'), qNum=document.getElementById('qNum'), visual=document.getElementById('visual'), options=document.getElementById('options'), feedback=document.getElementById('feedback'), nextBtn=document.getElementById('nextBtn'), counter=document.getElementById('counter'), scorePill=document.getElementById('scorePill'), progressBar=document.getElementById('progressBar'), stage=document.getElementById('stage'), report=document.getElementById('report');
+
+function shuffle(arr){
+  const copy=arr.map((x,i)=>({text:x,original:i}));
+  for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]]}
+  return copy;
+}
+
+function render(){
+  answered=false; nextBtn.disabled=true; feedback.className='feedback'; feedback.textContent='';
+  const item=questions[current];
+  qNum.textContent=current+1; qText.textContent=item.q; visual.innerHTML=item.v||'';
+  counter.textContent=`Pregunta ${current+1} de ${questions.length}`;
+  scorePill.textContent=`Aciertos: ${correct}`;
+  progressBar.style.width=`${(current/questions.length)*100}%`;
+  options.innerHTML='';
+  const mixed=shuffle(item.o);
+  mixed.forEach(entry=>{
+    const b=document.createElement('button'); b.className='option'; b.type='button'; b.textContent=entry.text;
+    b.addEventListener('click',()=>answer(b,entry.original)); options.appendChild(b);
+  });
+  document.getElementById('hint').textContent='Selecciona una respuesta.';
+}
+
+function answer(button, originalIndex){
+  if(answered) return; answered=true;
+  const item=questions[current]; const ok=originalIndex===item.a;
+  [...options.children].forEach(btn=>btn.disabled=true);
+  button.classList.add(ok?'correct':'wrong');
+  // Una sola respuesta por pregunta. Si falla, no se revela la opción correcta: así el reporte refleja comprensión real y no ensayo por descarte.
+  if(ok) correct++;
+  results.push({cat:item.cat,ok});
+  scorePill.textContent=`Aciertos: ${correct}`;
+  feedback.textContent=ok ? ('✓ '+item.e) : '✕ Respuesta registrada. Continúa con la siguiente pregunta; la opción correcta no se mostrará durante la evaluación.';
+  feedback.className=`feedback show ${ok?'good':'bad'}`;
+  document.getElementById('hint').textContent=ok?'Concepto identificado correctamente.':'Respuesta contabilizada como incorrecta.';
+  nextBtn.disabled=false;
+}
+
+nextBtn.addEventListener('click',()=>{
+  if(!answered)return;
+  if(current<questions.length-1){current++;render();stage.scrollIntoView({behavior:'smooth',block:'start'});} else finish();
+});
+
+function finish(){
+  progressBar.style.width='100%'; stage.style.display='none'; report.classList.add('show');
+  const pct=Math.round(correct/questions.length*100);
+  const passed=pct>=PASS_PERCENT;
+  const endedAt=new Date();
+  document.getElementById('finalScore').textContent=pct+'%'; document.getElementById('finalCount').textContent=`${correct} de ${questions.length}`;
+  document.getElementById('scoreRing').style.background=`conic-gradient(${passed?'var(--green)':'var(--red)'} ${pct*3.6}deg,#e8eef4 0deg)`;
+  const cats={}; results.forEach(r=>{cats[r.cat]??={ok:0,total:0};cats[r.cat].total++;if(r.ok)cats[r.cat].ok++});
+  const bars=document.getElementById('categoryBars'); bars.innerHTML='';
+  Object.entries(cats).forEach(([name,v])=>{const p=Math.round(v.ok/v.total*100);const row=document.createElement('div');row.className='barRow';row.innerHTML=`<span>${name}</span><div class="barTrack"><div class="barFill" style="width:${p}%"></div></div><span class="pct">${p}%</span>`;bars.appendChild(row)});
+
+  const badge=document.getElementById('passBadge');
+  badge.textContent=passed?'APROBADO · comprensión suficiente':'NO APROBADO · debe repetir la evaluación';
+  badge.className='passBadge '+(passed?'pass':'fail');
+
+  const durationSeconds=Math.max(1,Math.round((endedAt-attemptStartedAt)/1000));
+  const mins=Math.floor(durationSeconds/60), secs=durationSeconds%60;
+  const durationText=mins>0?`${mins} min ${secs} s`:`${secs} s`;
+  document.getElementById('reportMeta').innerHTML=`
+    <div class="reportMetaCard"><span>Alumno</span><strong>Pedro</strong></div>
+    <div class="reportMetaCard"><span>Intento</span><strong>${attempt}</strong></div>
+    <div class="reportMetaCard"><span>Resultado</span><strong>${passed?'Aprobado':'Repetir'}</strong></div>
+    <div class="reportMetaCard"><span>Tiempo</span><strong>${durationText}</strong></div>`;
+
+  let msg='';
+  if(pct>=90) msg='Dominio muy sólido. Pedro reconoce las partes de la división, comprende la comprobación y maneja bien los conceptos básicos de multiplicación y decimales.';
+  else if(pct>=80) msg='Evaluación aprobada. Pedro demuestra una comprensión suficiente para avanzar, aunque conviene repasar las categorías con menor porcentaje.';
+  else if(pct>=60) msg='Aún no alcanza el criterio de aprobación. Debe repetir el cuestionario y reforzar la casita de división, el residuo y la regla Divisor × Cociente + Residuo = Dividendo.';
+  else msg='Aún no alcanza el criterio de aprobación. Se recomienda volver a trabajar visualmente las partes de la división, el significado del residuo, los factores, el producto y la comprobación antes de repetir.';
+  document.getElementById('recommendation').textContent=msg;
+
+  const catLines=Object.entries(cats).map(([name,v])=>`${name}: ${v.ok}/${v.total} (${Math.round(v.ok/v.total*100)}%)`).join('\n');
+  lastReportText=`REPORTE DE COMPRENSIÓN MATEMÁTICA\nAlumno: Pedro\nIntento: ${attempt}\nFecha: ${endedAt.toLocaleString('es-MX')}\nResultado: ${passed?'APROBADO':'NO APROBADO - REPETIR'}\nCalificación: ${pct}% (${correct} de ${questions.length})\nTiempo: ${durationText}\nCriterio de aprobación: ${PASS_PERCENT}%\n\nRESULTADOS POR CATEGORÍA\n${catLines}\n\nOBSERVACIÓN\n${msg}\n\nRecurso diseñado y desarrollado por Luis Alberto Antonio Narciso.`;
+
+  const againBtn=document.getElementById('againBtn');
+  againBtn.textContent=passed?'Resolver otra vez':'Repetir para aprobar';
+  document.getElementById('reportNote').textContent=passed
+    ?`Aprobado con ${pct}%. El reporte ya puede entregarse.`
+    :`Se requiere ${PASS_PERCENT}% (20 de 25). Este intento quedó registrado como no aprobado; debe repetirse completo.`;
+  report.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function restart(){
+  attempt++;
+  current=0;correct=0;answered=false;results=[];attemptStartedAt=new Date();
+  stage.style.display='block';report.classList.remove('show');render();window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function copyReport(){
+  if(!lastReportText)return;
+  try{
+    await navigator.clipboard.writeText(lastReportText);
+    document.getElementById('reportNote').textContent='Reporte copiado. Ya puede pegarse en WhatsApp, correo o un documento.';
+  }catch(e){
+    const area=document.createElement('textarea');area.value=lastReportText;document.body.appendChild(area);area.select();document.execCommand('copy');area.remove();
+    document.getElementById('reportNote').textContent='Reporte copiado.';
+  }
+}
+
+function downloadReport(){
+  if(!lastReportText)return;
+  const blob=new Blob([lastReportText],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download=`Reporte_Pedro_Division_Multiplicacion_Intento_${attempt}.txt`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+}
+
+document.getElementById('restartBtn').addEventListener('click',restart);
+document.getElementById('againBtn').addEventListener('click',restart);
+document.getElementById('copyReportBtn').addEventListener('click',copyReport);
+document.getElementById('downloadReportBtn').addEventListener('click',downloadReport);
+document.getElementById('laaCurrentYear').textContent=new Date().getFullYear();
+render();
+</script>
+</body>
+</html>

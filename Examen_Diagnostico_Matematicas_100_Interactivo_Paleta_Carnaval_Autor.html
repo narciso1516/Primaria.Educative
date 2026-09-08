@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diagnóstico de Matemáticas · 6.º Primaria → 1.º Secundaria</title>
+<style>
+:root {
+  --bg:#F4EED8;
+  --card:#FFFDF7;
+  --ink:#2F4E2D;
+  --muted:#6C7859;
+  --line:#D6DBAA;
+  --accent:#F05235;
+  --accent2:#36D5CD;
+  --soft:#FFF1F6;
+  --warn:#C97800;
+  --ok:#4B7438;
+  --pink:#EC91B5;
+  --lime:#9EC657;
+  --yellow:#F1AE2F;
+  --green:#4B7438;
+  --turquoise:#36D5CD;
+  --coral:#F05235;
+}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--ink);background-image:radial-gradient(circle at 8% 12%,rgba(236,145,181,.14) 0 9%,transparent 10%),radial-gradient(circle at 92% 8%,rgba(158,198,87,.16) 0 10%,transparent 11%),radial-gradient(circle at 90% 88%,rgba(54,213,205,.11) 0 10%,transparent 11%)}
+button,input{font:inherit} button{cursor:pointer}
+.shell{max-width:980px;margin:auto;padding:18px}
+.topbar{position:sticky;top:0;z-index:10;background:rgba(244,238,216,.94);backdrop-filter:blur(12px);padding:12px 0 8px}
+.brand{display:flex;justify-content:space-between;gap:16px;align-items:end;flex-wrap:wrap}
+.brand h1{font-size:clamp(1.25rem,3vw,2rem);margin:0} .brand p{margin:.3rem 0 0;color:var(--muted)}
+.progress{height:10px;background:#e8edf5;border-radius:999px;overflow:hidden;margin-top:12px}
+.progress>div{height:100%;width:1%;background:linear-gradient(90deg,var(--coral),var(--pink),var(--yellow),var(--lime),var(--turquoise));transition:.25s}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:clamp(18px,3vw,30px);box-shadow:0 14px 34px rgba(75,116,56,.12);margin-top:14px}
+.kicker{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;font-weight:800;color:var(--green)}
+.qnum{font-weight:800;color:var(--muted)} .prompt{font-size:clamp(1.1rem,2.6vw,1.45rem);line-height:1.45;margin:10px 0 18px}
+.help{color:var(--muted);font-size:.92rem;margin-bottom:14px}
+.option-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.choice{padding:14px;border:2px solid var(--line);border-radius:14px;background:white;text-align:left;font-weight:700}
+.choice:hover,.choice:focus{border-color:#9bb6f0} .choice.selected{border-color:var(--accent);background:var(--soft)}
+.answer-input{width:100%;max-width:340px;border:2px solid var(--line);border-radius:14px;padding:14px 16px;font-size:1.25rem;outline:none}
+.answer-input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(37,99,235,.1)}
+.fraction-wrap{display:flex;align-items:center;gap:8px;max-width:260px} .frac-inputs{display:grid;gap:6px}
+.frac-line{height:2px;background:var(--ink);width:110px}
+.frac-inputs input{width:110px;text-align:center;border:2px solid var(--line);border-radius:10px;padding:10px;font-size:1.1rem}
+.classify{display:grid;gap:16px} .items{display:flex;gap:10px;flex-wrap:wrap}
+.token{padding:10px 13px;border:2px solid var(--line);border-radius:999px;background:#fff;font-weight:800}
+.token.active{border-color:var(--accent);background:var(--soft)} .buckets{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.bucket{min-height:110px;border:2px dashed #aab8ca;border-radius:16px;padding:12px;background:#fafcff}
+.bucket h4{margin:0 0 8px} .bucket .placed{display:flex;flex-wrap:wrap;gap:8px}
+.order-zone{display:grid;gap:10px} .order-list{display:flex;flex-wrap:wrap;gap:8px}
+.order-slot{min-width:86px;min-height:48px;border:2px dashed #aab8ca;border-radius:12px;display:grid;place-items:center;padding:8px;background:#fbfdff}
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px} .match-col{display:grid;gap:8px}
+.match-item{padding:12px;border:2px solid var(--line);border-radius:12px;background:#fff;font-weight:700}
+.match-item.active{border-color:var(--accent);background:var(--soft)} .pair-list{margin-top:12px;color:var(--muted)}
+.build-tokens{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+.build-area{min-height:62px;border:2px dashed #aab8ca;border-radius:14px;padding:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px;flex-wrap:wrap}
+.btn{border:0;border-radius:14px;padding:12px 18px;font-weight:800} .primary{background:var(--accent);color:#fff} .secondary{background:#e8eef7;color:var(--ink)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.status{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:.92rem;margin-top:10px}
+.review-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:8px}
+.review-btn{padding:10px 0;border:1px solid var(--line);border-radius:10px;background:#fff;font-weight:800}
+.review-btn.done{background:#eaf7ef;border-color:#b7dfc4;color:var(--ok)} .review-btn.missing{background:#fff7ed;border-color:#fed7aa;color:var(--warn)}
+.report h2{margin-top:0} .score{font-size:clamp(2.2rem,8vw,4.2rem);font-weight:900;color:var(--accent)}
+.domain{display:grid;grid-template-columns:1fr auto;gap:8px;border-bottom:1px solid var(--line);padding:10px 0}
+.note{background:#fff8e7;border:1px solid #f5dca6;padding:12px 14px;border-radius:12px;color:#7c4a03}
+footer{padding:28px 0 10px;color:var(--muted);text-align:center;font-size:.9rem}
+@media(max-width:640px){.option-grid,.buckets,.match-grid{grid-template-columns:1fr} .choice{padding:13px} .shell{padding:10px}}
+
+.math-frac{
+  display:inline-grid;
+  grid-template-rows:auto 2px auto;
+  align-items:center;
+  justify-items:center;
+  vertical-align:middle;
+  min-width:1.55em;
+  margin:0 .12em;
+  line-height:1.05;
+  font-weight:800;
+}
+.math-frac .bar{width:100%;height:2px;background:currentColor;margin:2px 0}
+.math-frac .top,.math-frac .bottom{padding:0 .12em}
+.feedback{
+  margin:14px 0 2px;
+  border-radius:14px;
+  padding:12px 14px;
+  font-weight:800;
+  display:none;
+}
+.feedback.show{display:block}
+.feedback.ok{background:#ecfdf3;border:1px solid #b7e4c7;color:#166534}
+.feedback.bad{background:#fff1f2;border:1px solid #fecdd3;color:#9f1239}
+.attempts{font-size:.9rem;color:var(--muted);font-weight:700}
+.check-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.choice.correct-flash{border-color:#16a34a;background:#f0fdf4}
+.choice.wrong-flash{border-color:#dc2626;background:#fff1f2}
+
+
+.brand h1{
+  color:var(--green);
+  letter-spacing:-.02em;
+}
+.card{
+  border-top:7px solid var(--yellow);
+}
+.choice:nth-child(4n+1){border-left:6px solid var(--pink)}
+.choice:nth-child(4n+2){border-left:6px solid var(--turquoise)}
+.choice:nth-child(4n+3){border-left:6px solid var(--lime)}
+.choice:nth-child(4n+4){border-left:6px solid var(--coral)}
+.choice.selected{
+  border-color:var(--green);
+  background:#F2F7E8;
+}
+.primary{
+  background:var(--coral);
+}
+.primary:hover{filter:brightness(.96)}
+.secondary{
+  background:#EAF0CF;
+  color:var(--green);
+}
+.token.active,.match-item.active{
+  border-color:var(--turquoise);
+  background:#ECFBFA;
+}
+.bucket{
+  background:#FFF9E7;
+}
+.feedback.ok{
+  background:#F1F8E8;
+  border-color:#BFD88D;
+  color:var(--green);
+}
+.feedback.bad{
+  background:#FFF0F4;
+  border-color:#F2B8CD;
+  color:#9B3158;
+}
+.review-btn.done{
+  background:#F1F8E8;
+  border-color:#BFD88D;
+  color:var(--green);
+}
+.note{
+  background:#FFF7D9;
+  border-color:#F1D77C;
+  color:#76520C;
+}
+
+
+/* Footer del autor: estilos aislados para no interferir con la página */
+.author-footer-wrap{
+  margin-top:28px;
+  padding:0 0 22px;
+}
+.author-footer{
+  background:rgba(255,253,247,.96);
+  border:1px solid var(--line);
+  border-top:6px solid var(--green);
+  border-radius:20px;
+  box-shadow:0 10px 28px rgba(75,116,56,.10);
+  padding:22px;
+  color:var(--ink);
+}
+.author-footer__eyebrow{
+  margin:0 0 6px;
+  font-size:.78rem;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--coral);
+}
+.author-footer__name{
+  margin:0;
+  font-size:clamp(1.15rem,2.4vw,1.45rem);
+  line-height:1.25;
+  color:var(--green);
+}
+.author-footer__description{
+  margin:10px 0 0;
+  max-width:780px;
+  line-height:1.6;
+  color:var(--muted);
+}
+.author-footer__quote{
+  margin:14px 0 0;
+  font-size:.94rem;
+  font-style:italic;
+  color:var(--ink);
+}
+.author-footer__meta{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px solid var(--line);
+}
+.author-footer__button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+  padding:11px 16px;
+  border-radius:12px;
+  background:var(--green);
+  color:#fff;
+  text-decoration:none;
+  font-weight:800;
+  transition:transform .15s ease, filter .15s ease;
+}
+.author-footer__button:hover,
+.author-footer__button:focus{
+  filter:brightness(.97);
+  transform:translateY(-1px);
+}
+.author-footer__copyright{
+  margin:0;
+  font-size:.88rem;
+  color:var(--muted);
+}
+@media(max-width:640px){
+  .author-footer{
+    padding:18px;
+    border-radius:16px;
+  }
+  .author-footer__meta{
+    align-items:stretch;
+  }
+  .author-footer__button{
+    width:100%;
+  }
+}
+
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="topbar">
+    <div class="brand">
+      <div>
+        <h1>Diagnóstico de Matemáticas</h1>
+        <p>6.º de primaria → 1.º de secundaria · 100 reactivos</p>
+      </div>
+      <div id="counter" class="qnum">Pregunta 1 de 100</div>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+  </div>
+
+  <main id="app"></main>
+  <footer>Examen interactivo · avanza al acertar · los errores permiten volver a intentar</footer>
+
+<div class="author-footer-wrap">
+  <footer class="author-footer" aria-label="Información del autor">
+    <p class="author-footer__eyebrow">Autor</p>
+    <h2 class="author-footer__name">Luis Alberto Antonio Narciso</h2>
+    <p class="author-footer__description">
+      Ingeniero en Electrónica y profesional de Quality Assurance, automatización de pruebas y tecnología educativa. Desarrolla experiencias web interactivas orientadas al aprendizaje, combinando educación, tecnología, diseño y herramientas digitales.
+    </p>
+    <p class="author-footer__quote">“Recurso diseñado y desarrollado por Luis Alberto Antonio Narciso”.</p>
+    <div class="author-footer__meta">
+      <a
+        class="author-footer__button"
+        href="https://narciso1516.github.io/narcisotesting.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >Conocer al autor</a>
+      <p class="author-footer__copyright">© 2026 Luis Alberto Antonio Narciso</p>
+    </div>
+  </footer>
+</div>
+
+</div>
+
+<script>
+const QUESTIONS = [{"n": 1, "section": "Números naturales y operaciones", "prompt": "En 572,416, identifica el valor posicional del dígito 7.", "type": "select", "answer": "70,000", "options": ["700", "7,000", "70,000", "700,000"], "meta": {}, "skill": "Valor posicional"}, {"n": 2, "section": "Números naturales y operaciones", "prompt": "Resuelve: 3,458 + 2,769", "type": "number", "answer": "6227", "options": [], "meta": {}, "skill": "Suma"}, {"n": 3, "section": "Números naturales y operaciones", "prompt": "Resuelve: 8,000 − 3,475", "type": "number", "answer": "4525", "options": [], "meta": {}, "skill": "Resta"}, {"n": 4, "section": "Números naturales y operaciones", "prompt": "Resuelve: 248 × 6", "type": "number", "answer": "1488", "options": [], "meta": {}, "skill": "Multiplicación"}, {"n": 5, "section": "Números naturales y operaciones", "prompt": "Resuelve: 1,872 ÷ 8", "type": "number", "answer": "234", "options": [], "meta": {}, "skill": "División"}, {"n": 6, "section": "Números naturales y operaciones", "prompt": "Una escuela compró 24 cajas con 36 lápices en cada una. ¿Cuántos lápices compró?", "type": "number", "answer": "864", "options": [], "meta": {}, "skill": "Problema multiplicativo"}, {"n": 7, "section": "Números naturales y operaciones", "prompt": "Toca el número mayor.", "type": "select", "answer": "45,980", "options": ["45,908", "45,890", "45,980", "45,809"], "meta": {}, "skill": "Comparación"}, {"n": 8, "section": "Números naturales y operaciones", "prompt": "Escribe en cifras: trescientos cinco mil cuarenta y dos.", "type": "number", "answer": "305042", "options": [], "meta": {}, "skill": "Escritura de números"}, {"n": 9, "section": "Números naturales y operaciones", "prompt": "Completa la sucesión: 125, 250, 375, 500, ____", "type": "number", "answer": "625", "options": [], "meta": {}, "skill": "Sucesiones"}, {"n": 10, "section": "Números naturales y operaciones", "prompt": "Resuelve 15 + 6 × 4. Primero selecciona la operación que debe resolverse antes.", "type": "build", "answer": "39", "options": [], "meta": {"tokens": ["15 + 6 × 4", "6 × 4", "15 + 24", "39"], "correct_order": ["6 × 4", "15 + 24", "39"]}, "skill": "Jerarquía de operaciones"}, {"n": 11, "section": "Números naturales y operaciones", "prompt": "En 20 − 3 × 5, toca la operación que debe resolverse primero.", "type": "select", "answer": "3 × 5", "options": ["20 − 3", "3 × 5", "20 − 15"], "meta": {}, "skill": "Jerarquía de operaciones"}, {"n": 12, "section": "Números naturales y operaciones", "prompt": "Una biblioteca tiene 2,450 libros. Compra 375 y después dona 128. Construye la operación correcta y escribe el resultado.", "type": "build", "answer": "2697", "options": [], "meta": {"tokens": ["2450", "+", "375", "−", "128", "="], "formula": "2450 + 375 − 128"}, "skill": "Modelación"}, {"n": 13, "section": "Números naturales y operaciones", "prompt": "Resuelve: 125 × 32", "type": "number", "answer": "4000", "options": [], "meta": {}, "skill": "Multiplicación"}, {"n": 14, "section": "Números naturales y operaciones", "prompt": "936 dulces se reparten entre 24 niños por igual. ¿Cuántos recibe cada uno?", "type": "number", "answer": "39", "options": [], "meta": {}, "skill": "División contextualizada"}, {"n": 15, "section": "Números naturales y operaciones", "prompt": "Clasifica cada número como PAR o IMPAR.", "type": "classify", "answer": {"1,235": "Impar", "2,417": "Impar", "3,568": "Par", "5,721": "Impar"}, "options": ["1,235", "2,417", "3,568", "5,721"], "meta": {"groups": ["Par", "Impar"]}, "skill": "Paridad"}, {"n": 16, "section": "Múltiplos, divisores y primos", "prompt": "Selecciona el múltiplo de 6.", "type": "select", "answer": "42", "options": ["25", "32", "42", "55"], "meta": {}, "skill": "Múltiplos"}, {"n": 17, "section": "Múltiplos, divisores y primos", "prompt": "Selecciona un divisor de 36.", "type": "select", "answer": "9", "options": ["5", "7", "9", "11"], "meta": {}, "skill": "Divisores"}, {"n": 18, "section": "Múltiplos, divisores y primos", "prompt": "Clasifica los números como PRIMO o COMPUESTO.", "type": "classify", "answer": {"21": "Compuesto", "29": "Primo", "33": "Compuesto", "39": "Compuesto"}, "options": ["21", "29", "33", "39"], "meta": {"groups": ["Primo", "Compuesto"]}, "skill": "Números primos"}, {"n": 19, "section": "Múltiplos, divisores y primos", "prompt": "Calcula el mínimo común múltiplo de 4 y 6.", "type": "number", "answer": "12", "options": [], "meta": {}, "skill": "MCM"}, {"n": 20, "section": "Múltiplos, divisores y primos", "prompt": "Dos campanas suenan cada 4 y 6 minutos. Si acaban de sonar juntas, ¿en cuántos minutos volverán a coincidir?", "type": "number", "answer": "12", "options": [], "meta": {}, "skill": "MCM contextualizado"}, {"n": 21, "section": "Fracciones", "prompt": "Selecciona la representación que equivale a 1/2.", "type": "select", "answer": "2/4", "options": ["1/3", "2/4", "3/8", "4/10"], "meta": {}, "skill": "Representación fraccionaria"}, {"n": 22, "section": "Fracciones", "prompt": "Relaciona 3/4 con una fracción equivalente.", "type": "match", "answer": {"3/4": "6/8"}, "options": [], "meta": {"left": ["3/4"], "right": ["6/10", "6/8", "9/16"]}, "skill": "Fracciones equivalentes"}, {"n": 23, "section": "Fracciones", "prompt": "Ordena de menor a mayor: 1/4, 2/4, 3/4, 1/2.", "type": "order", "answer": ["1/4", "2/4", "1/2", "3/4"], "options": ["1/4", "2/4", "3/4", "1/2"], "meta": {}, "skill": "Comparación de fracciones"}, {"n": 24, "section": "Fracciones", "prompt": "Resuelve: 2/5 + 1/5", "type": "fraction", "answer": "3/5", "options": [], "meta": {}, "skill": "Suma de fracciones"}, {"n": 25, "section": "Fracciones", "prompt": "Resuelve y simplifica: 7/8 − 3/8", "type": "fraction", "answer": "1/2", "options": [], "meta": {}, "skill": "Resta de fracciones"}, {"n": 26, "section": "Fracciones", "prompt": "Resuelve: 1/2 + 1/4", "type": "fraction", "answer": "3/4", "options": [], "meta": {}, "skill": "Suma de fracciones"}, {"n": 27, "section": "Fracciones", "prompt": "Una pizza está dividida en 8 partes. Se comen 3. Escribe la fracción que queda.", "type": "fraction", "answer": "5/8", "options": [], "meta": {}, "skill": "Fracción de un todo"}, {"n": 28, "section": "Fracciones", "prompt": "Simplifica completamente: 12/18", "type": "fraction", "answer": "2/3", "options": [], "meta": {}, "skill": "Simplificación"}, {"n": 29, "section": "Fracciones", "prompt": "Calcula 3/4 de 20.", "type": "number", "answer": "15", "options": [], "meta": {}, "skill": "Fracción de una cantidad"}, {"n": 30, "section": "Fracciones", "prompt": "María recorrió 2/3 km por la mañana y 1/6 km por la tarde. ¿Cuánto recorrió en total?", "type": "fraction", "answer": "5/6", "options": [], "meta": {}, "skill": "Suma de fracciones"}, {"n": 31, "section": "Fracciones", "prompt": "Ordena de menor a mayor: 5/6, 2/3, 3/4, 1/2.", "type": "order", "answer": ["1/2", "2/3", "3/4", "5/6"], "options": ["5/6", "2/3", "3/4", "1/2"], "meta": {}, "skill": "Comparación de fracciones"}, {"n": 32, "section": "Fracciones", "prompt": "Convierte 7/3 a número mixto.", "type": "textnum", "answer": "2 1/3", "options": [], "meta": {}, "skill": "Fracción impropia"}, {"n": 33, "section": "Fracciones", "prompt": "Resuelve: 2/3 × 3/4", "type": "fraction", "answer": "1/2", "options": [], "meta": {}, "skill": "Multiplicación de fracciones"}, {"n": 34, "section": "Fracciones", "prompt": "Una botella contiene 3/4 L y se utilizan 1/4 L. ¿Cuánto queda?", "type": "fraction", "answer": "1/2", "options": [], "meta": {}, "skill": "Resta de fracciones"}, {"n": 35, "section": "Fracciones", "prompt": "En un grupo de 30 alumnos, 2/5 son niñas. ¿Cuántas niñas hay?", "type": "number", "answer": "12", "options": [], "meta": {}, "skill": "Fracción de un conjunto"}, {"n": 36, "section": "Números decimales", "prompt": "Escribe en decimal: tres enteros y veinticinco centésimos.", "type": "textnum", "answer": "3.25", "options": [], "meta": {}, "skill": "Lectura de decimales"}, {"n": 37, "section": "Números decimales", "prompt": "Ordena de menor a mayor: 2.05, 2.15, 2.5, 2.051.", "type": "order", "answer": ["2.05", "2.051", "2.15", "2.5"], "options": ["2.05", "2.15", "2.5", "2.051"], "meta": {}, "skill": "Comparación decimal"}, {"n": 38, "section": "Números decimales", "prompt": "Resuelve: 4.75 + 2.6", "type": "textnum", "answer": "7.35", "options": [], "meta": {}, "skill": "Suma decimal"}, {"n": 39, "section": "Números decimales", "prompt": "Resuelve: 10 − 3.68", "type": "textnum", "answer": "6.32", "options": [], "meta": {}, "skill": "Resta decimal"}, {"n": 40, "section": "Números decimales", "prompt": "Resuelve: 2.5 × 4", "type": "textnum", "answer": "10", "options": [], "meta": {}, "skill": "Multiplicación decimal"}, {"n": 41, "section": "Números decimales", "prompt": "Resuelve: 8.4 ÷ 2", "type": "textnum", "answer": "4.2", "options": [], "meta": {}, "skill": "División decimal"}, {"n": 42, "section": "Números decimales", "prompt": "Relaciona 0.5 con su fracción equivalente.", "type": "match", "answer": {"0.5": "1/2"}, "options": [], "meta": {"left": ["0.5"], "right": ["1/5", "1/2", "2/5"]}, "skill": "Decimal a fracción"}, {"n": 43, "section": "Números decimales", "prompt": "Relaciona 3/4 con su decimal equivalente.", "type": "match", "answer": {"3/4": "0.75"}, "options": [], "meta": {"left": ["3/4"], "right": ["0.25", "0.50", "0.75"]}, "skill": "Fracción a decimal"}, {"n": 44, "section": "Números decimales", "prompt": "Una libreta cuesta $18.50. ¿Cuánto cuestan 4?", "type": "textnum", "answer": "74", "options": [], "meta": {}, "skill": "Dinero"}, {"n": 45, "section": "Números decimales", "prompt": "Ana tiene $100 y compra un artículo de $63.75. Escribe el cambio que debe recibir.", "type": "textnum", "answer": "36.25", "options": [], "meta": {}, "skill": "Cambio"}, {"n": 46, "section": "Porcentajes y proporcionalidad", "prompt": "Calcula el 50% de 80.", "type": "number", "answer": "40", "options": [], "meta": {}, "skill": "Porcentajes"}, {"n": 47, "section": "Porcentajes y proporcionalidad", "prompt": "Calcula el 25% de 200.", "type": "number", "answer": "50", "options": [], "meta": {}, "skill": "Porcentajes"}, {"n": 48, "section": "Porcentajes y proporcionalidad", "prompt": "Una camiseta cuesta $300 y tiene 10% de descuento. ¿Cuánto se descuenta?", "type": "number", "answer": "30", "options": [], "meta": {}, "skill": "Descuento"}, {"n": 49, "section": "Porcentajes y proporcionalidad", "prompt": "Después del descuento anterior, ¿cuánto se paga?", "type": "number", "answer": "270", "options": [], "meta": {}, "skill": "Precio final"}, {"n": 50, "section": "Porcentajes y proporcionalidad", "prompt": "De 40 estudiantes, 20 aprobaron. ¿Qué porcentaje representa?", "type": "number", "answer": "50", "options": [], "meta": {}, "skill": "Porcentaje de un conjunto"}, {"n": 51, "section": "Porcentajes y proporcionalidad", "prompt": "Completa la tabla proporcional: 3 cuadernos → $45; 5 cuadernos → $____", "type": "number", "answer": "75", "options": [], "meta": {}, "skill": "Proporcionalidad"}, {"n": 52, "section": "Porcentajes y proporcionalidad", "prompt": "Un automóvil recorre 120 km con 10 L. Con el mismo rendimiento, ¿cuántos km recorrerá con 20 L?", "type": "number", "answer": "240", "options": [], "meta": {}, "skill": "Proporcionalidad"}, {"n": 53, "section": "Porcentajes y proporcionalidad", "prompt": "Para 4 vasos se usan 2 limones. ¿Cuántos limones se requieren para 12 vasos?", "type": "number", "answer": "6", "options": [], "meta": {}, "skill": "Razones"}, {"n": 54, "section": "Porcentajes y proporcionalidad", "prompt": "Relaciona 1/4 con su porcentaje equivalente.", "type": "match", "answer": {"1/4": "25%"}, "options": [], "meta": {"left": ["1/4"], "right": ["10%", "20%", "25%", "40%"]}, "skill": "Fracción a porcentaje"}, {"n": 55, "section": "Porcentajes y proporcionalidad", "prompt": "Un artículo aumenta de $100 a $120. ¿En qué porcentaje aumentó?", "type": "number", "answer": "20", "options": [], "meta": {}, "skill": "Porcentaje de aumento"}, {"n": 56, "section": "Geometría", "prompt": "Ajusta mentalmente un ángulo recto. ¿Cuántos grados mide?", "type": "number", "answer": "90", "options": [], "meta": {}, "skill": "Ángulo recto"}, {"n": 57, "section": "Geometría", "prompt": "Clasifica un ángulo de 40°.", "type": "select", "answer": "Agudo", "options": ["Agudo", "Recto", "Obtuso", "Llano"], "meta": {}, "skill": "Clasificación de ángulos"}, {"n": 58, "section": "Geometría", "prompt": "Clasifica un ángulo de 120°.", "type": "select", "answer": "Obtuso", "options": ["Agudo", "Recto", "Obtuso", "Llano"], "meta": {}, "skill": "Clasificación de ángulos"}, {"n": 59, "section": "Geometría", "prompt": "¿Cuántos lados tiene un hexágono?", "type": "number", "answer": "6", "options": [], "meta": {}, "skill": "Polígonos"}, {"n": 60, "section": "Geometría", "prompt": "Selecciona la figura con cuatro lados iguales y cuatro ángulos rectos.", "type": "select", "answer": "Cuadrado", "options": ["Rectángulo", "Rombo", "Cuadrado", "Trapecio"], "meta": {}, "skill": "Cuadriláteros"}, {"n": 61, "section": "Geometría", "prompt": "Calcula el perímetro de un cuadrado de 7 cm de lado.", "type": "number", "answer": "28", "options": [], "meta": {}, "skill": "Perímetro"}, {"n": 62, "section": "Geometría", "prompt": "Calcula el área de un cuadrado de 8 cm de lado.", "type": "number", "answer": "64", "options": [], "meta": {}, "skill": "Área"}, {"n": 63, "section": "Geometría", "prompt": "Un rectángulo mide 12 cm por 5 cm. Calcula su área.", "type": "number", "answer": "60", "options": [], "meta": {}, "skill": "Área de rectángulo"}, {"n": 64, "section": "Geometría", "prompt": "El mismo rectángulo mide 12 cm por 5 cm. Calcula su perímetro.", "type": "number", "answer": "34", "options": [], "meta": {}, "skill": "Perímetro de rectángulo"}, {"n": 65, "section": "Geometría", "prompt": "Calcula el área de un triángulo con base 10 cm y altura 6 cm.", "type": "number", "answer": "30", "options": [], "meta": {}, "skill": "Área de triángulo"}, {"n": 66, "section": "Geometría", "prompt": "Clasifica un triángulo con tres lados iguales.", "type": "select", "answer": "Equilátero", "options": ["Escaleno", "Isósceles", "Equilátero", "Rectángulo"], "meta": {}, "skill": "Triángulos"}, {"n": 67, "section": "Geometría", "prompt": "¿Cuántos grados suman los ángulos interiores de un triángulo?", "type": "number", "answer": "180", "options": [], "meta": {}, "skill": "Ángulos interiores"}, {"n": 68, "section": "Geometría", "prompt": "Selecciona el sólido que tiene seis caras cuadradas iguales.", "type": "select", "answer": "Cubo", "options": ["Cilindro", "Pirámide", "Cubo", "Cono"], "meta": {}, "skill": "Cuerpos geométricos"}, {"n": 69, "section": "Geometría", "prompt": "Selecciona el objeto cuya forma se parece más a un cilindro.", "type": "select", "answer": "Lata", "options": ["Pelota", "Lata", "Dado", "Pirámide"], "meta": {}, "skill": "Sólidos en objetos reales"}, {"n": 70, "section": "Geometría", "prompt": "Si el radio de un círculo es 5 cm, ¿cuál es su diámetro?", "type": "number", "answer": "10", "options": [], "meta": {}, "skill": "Radio y diámetro"}, {"n": 71, "section": "Medición y conversiones", "prompt": "Convierte 2 metros a centímetros.", "type": "number", "answer": "200", "options": [], "meta": {}, "skill": "Longitud"}, {"n": 72, "section": "Medición y conversiones", "prompt": "Convierte 3 kilómetros a metros.", "type": "number", "answer": "3000", "options": [], "meta": {}, "skill": "Longitud"}, {"n": 73, "section": "Medición y conversiones", "prompt": "Convierte 2.5 kg a gramos.", "type": "number", "answer": "2500", "options": [], "meta": {}, "skill": "Masa"}, {"n": 74, "section": "Medición y conversiones", "prompt": "¿Cuántos mililitros hay en 1 litro?", "type": "number", "answer": "1000", "options": [], "meta": {}, "skill": "Capacidad"}, {"n": 75, "section": "Medición y conversiones", "prompt": "Una película empieza a las 4:35 p. m. y dura 1 h 45 min. ¿A qué hora termina? Escribe, por ejemplo, 6:20.", "type": "textnum", "answer": "6:20", "options": [], "meta": {}, "skill": "Tiempo"}, {"n": 76, "section": "Medición y conversiones", "prompt": "¿Cuántos minutos hay en 2 horas y media?", "type": "number", "answer": "150", "options": [], "meta": {}, "skill": "Tiempo"}, {"n": 77, "section": "Medición y conversiones", "prompt": "Un recipiente contiene 3 L de agua. Se usan 750 mL. ¿Cuántos mililitros quedan?", "type": "number", "answer": "2250", "options": [], "meta": {}, "skill": "Capacidad"}, {"n": 78, "section": "Medición y conversiones", "prompt": "Una cuerda mide 5.4 m. ¿Cuántos centímetros son?", "type": "number", "answer": "540", "options": [], "meta": {}, "skill": "Longitud"}, {"n": 79, "section": "Plano cartesiano, patrones y preálgebra", "prompt": "En el punto (3,5), identifica la coordenada x.", "type": "select", "answer": "3", "options": ["3", "5"], "meta": {}, "skill": "Coordenadas"}, {"n": 80, "section": "Plano cartesiano, patrones y preálgebra", "prompt": "En un plano cartesiano, ¿qué nombre recibe el punto (0,0)?", "type": "select", "answer": "Origen", "options": ["Origen", "Eje vertical", "Cuadrante", "Coordenada"], "meta": {}, "skill": "Plano cartesiano"}, {"n": 81, "section": "Plano cartesiano, patrones y preálgebra", "prompt": "Completa la secuencia: 2, 4, 8, 16, ____", "type": "number", "answer": "32", "options": [], "meta": {}, "skill": "Patrón multiplicativo"}, {"n": 82, "section": "Plano cartesiano, patrones y preálgebra", "prompt": "Completa la secuencia: 5, 10, 15, ____, 25", "type": "number", "answer": "20", "options": [], "meta": {}, "skill": "Patrón aditivo"}, {"n": 83, "section": "Plano cartesiano, patrones y preálgebra", "prompt": "Resuelve: □ + 7 = 15", "type": "number", "answer": "8", "options": [], "meta": {}, "skill": "Ecuación aditiva"}, {"n": 84, "section": "Plano cartesiano, patrones y preálgebra", "prompt": "Resuelve: 3 × △ = 27", "type": "number", "answer": "9", "options": [], "meta": {}, "skill": "Ecuación multiplicativa"}, {"n": 85, "section": "Plano cartesiano, patrones y preálgebra", "prompt": "Resuelve: x − 12 = 20", "type": "number", "answer": "32", "options": [], "meta": {}, "skill": "Ecuación aditiva"}, {"n": 86, "section": "Plano cartesiano, patrones y preálgebra", "prompt": "Completa la relación: 1→4, 2→8, 3→12, 5→____", "type": "number", "answer": "20", "options": [], "meta": {}, "skill": "Relación funcional"}, {"n": 87, "section": "Plano cartesiano, patrones y preálgebra", "prompt": "Construye la expresión: “el doble de un número más 3”.", "type": "select", "answer": "2x + 3", "options": ["2x + 3", "2(x + 3)", "x + 2 + 3", "3x + 2"], "meta": {}, "skill": "Expresión algebraica"}, {"n": 88, "section": "Plano cartesiano, patrones y preálgebra", "prompt": "Pedro tiene x canicas y recibe 5 más. Construye la expresión que representa cuántas tiene ahora.", "type": "select", "answer": "x + 5", "options": ["5x", "x − 5", "x + 5", "x ÷ 5"], "meta": {}, "skill": "Modelación algebraica"}, {"n": 89, "section": "Estadística e interpretación de datos", "prompt": "Con los datos 8, 7, 10, 9, 6, selecciona la calificación más alta.", "type": "select", "answer": "10", "options": ["8", "7", "10", "9", "6"], "meta": {}, "skill": "Máximo"}, {"n": 90, "section": "Estadística e interpretación de datos", "prompt": "Calcula el promedio de 8, 7, 10, 9 y 6.", "type": "number", "answer": "8", "options": [], "meta": {}, "skill": "Media"}, {"n": 91, "section": "Estadística e interpretación de datos", "prompt": "Calcula el rango de 8, 7, 10, 9 y 6.", "type": "number", "answer": "4", "options": [], "meta": {}, "skill": "Rango"}, {"n": 92, "section": "Estadística e interpretación de datos", "prompt": "En una encuesta: 12 prefieren fútbol, 8 básquetbol y 5 voleibol. ¿Cuántos alumnos participaron?", "type": "number", "answer": "25", "options": [], "meta": {}, "skill": "Frecuencias"}, {"n": 93, "section": "Estadística e interpretación de datos", "prompt": "En la misma encuesta, selecciona el deporte con mayor preferencia.", "type": "select", "answer": "Fútbol", "options": ["Básquetbol", "Voleibol", "Fútbol"], "meta": {}, "skill": "Interpretación de datos"}, {"n": 94, "section": "Estadística e interpretación de datos", "prompt": "Las temperaturas fueron 20°, 22°, 24°, 22° y 22°. ¿Cuál es la moda?", "type": "number", "answer": "22", "options": [], "meta": {}, "skill": "Moda"}, {"n": 95, "section": "Resolución de problemas", "prompt": "Una familia compra 3 kg de manzanas a $32/kg y paga con $200. ¿Cuánto cambio recibe?", "type": "number", "answer": "104", "options": [], "meta": {}, "skill": "Problema con dinero"}, {"n": 96, "section": "Resolución de problemas", "prompt": "Un autobús tiene 48 asientos. Si están ocupados 3/4, ¿cuántos pasajeros hay?", "type": "number", "answer": "36", "options": [], "meta": {}, "skill": "Fracción de un conjunto"}, {"n": 97, "section": "Resolución de problemas", "prompt": "Un depósito de 800 L está al 75% de su capacidad. ¿Cuántos litros contiene?", "type": "number", "answer": "600", "options": [], "meta": {}, "skill": "Porcentajes"}, {"n": 98, "section": "Resolución de problemas", "prompt": "Una escuela tiene 360 alumnos. Si se forman equipos de 24, ¿cuántos equipos completos pueden hacerse?", "type": "number", "answer": "15", "options": [], "meta": {}, "skill": "División"}, {"n": 99, "section": "Resolución de problemas", "prompt": "Sofía tenía $500 y gastó 2/5. ¿Cuánto dinero le queda?", "type": "number", "answer": "300", "options": [], "meta": {}, "skill": "Fracción restante"}, {"n": 100, "section": "Resolución de problemas", "prompt": "Un terreno rectangular mide 20 m por 15 m. ¿Cuántos metros de cerca se necesitan para rodearlo?", "type": "number", "answer": "70", "options": [], "meta": {}, "skill": "Perímetro contextualizado"}];
+
+let current = 0;
+const responses = Array(QUESTIONS.length).fill(null);
+const attempts = Array(QUESTIONS.length).fill(0);
+const completed = Array(QUESTIONS.length).fill(false);
+const optionOrders = QUESTIONS.map(q => Array.isArray(q.options) ? [...q.options] : []);
+const metaRightOrders = QUESTIONS.map(q => q.meta && Array.isArray(q.meta.right) ? [...q.meta.right] : null);
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function norm(v){
+  return String(v ?? "").trim().toLowerCase().replace(/\s+/g," ").replace(/,/g,"");
+}
+function fracHTML(txt){
+  const str=String(txt ?? "");
+  return str.replace(/(-?\d+)\s*\/\s*(-?\d+)/g,
+    '<span class="math-frac" aria-label="$1 sobre $2"><span class="top">$1</span><span class="bar"></span><span class="bottom">$2</span></span>');
+}
+function eqAnswer(q, r){
+  if(r==null) return false;
+  if(q.type==="classify"){
+    const keys=Object.keys(q.answer);
+    return keys.every(k => r[k]===q.answer[k]);
+  }
+  if(q.type==="order") return JSON.stringify(r)===JSON.stringify(q.answer);
+  if(q.type==="match"){
+    return Object.keys(q.answer).every(k => r[k]===q.answer[k]);
+  }
+  if(q.type==="fraction"){
+    const parse=s=>{
+      const m=String(s).trim().match(/^(-?\d+)\s*\/\s*(-?\d+)$/); if(!m) return null;
+      return [Number(m[1]),Number(m[2])];
+    };
+    const a=parse(q.answer), b=parse(r); if(!a||!b||a[1]===0||b[1]===0) return false;
+    return a[0]*b[1]===b[0]*a[1];
+  }
+  if(q.type==="build") return norm(q.answer)===norm((r||{}).result||"");
+  return norm(q.answer)===norm(r);
+}
+function answered(r){
+  if(r==null) return false;
+  if(typeof r==="string") return r.trim()!=="";
+  if(Array.isArray(r)) return r.length>0;
+  if(typeof r==="object") return Object.keys(r).length>0;
+  return true;
+}
+function setResp(v){responses[current]=v;}
+function headerUpdate(){
+  document.getElementById("counter").textContent=`Pregunta ${current+1} de 100`;
+  const done=completed.filter(Boolean).length;
+  document.getElementById("progressBar").style.width=`${Math.max(1,done)}%`;
+}
+function feedback(msg, ok=false){
+  const el=document.getElementById("feedback");
+  if(!el) return;
+  el.className="feedback show "+(ok?"ok":"bad");
+  el.textContent=msg;
+}
+function clearFeedback(){
+  const el=document.getElementById("feedback");
+  if(el){el.className="feedback";el.textContent="";}
+}
+function advance(){
+  completed[current]=true;
+  headerUpdate();
+  feedback("✅ ¡Correcto! Avanzando a la siguiente pregunta…", true);
+  setTimeout(()=>{
+    if(current < QUESTIONS.length-1){current++; render();}
+    else showReport();
+  },650);
+}
+function failAndRetry(q){
+  attempts[current]++;
+  feedback(`❌ Respuesta incorrecta. Intenta nuevamente. Intento ${attempts[current]+1}.`, false);
+
+  // Reorder answer choices after each wrong attempt, without revealing the correct answer.
+  if(q.type==="select" && optionOrders[current].length){
+    optionOrders[current]=shuffle(optionOrders[current]);
+    setTimeout(()=>renderInteraction(q),450);
+  } else if(q.type==="order" && optionOrders[current].length){
+    optionOrders[current]=shuffle(optionOrders[current]);
+    responses[current]=[];
+    setTimeout(()=>renderInteraction(q),450);
+  } else if(q.type==="match" && metaRightOrders[current]){
+    metaRightOrders[current]=shuffle(metaRightOrders[current]);
+    responses[current]={};
+    setTimeout(()=>renderInteraction(q),450);
+  }
+}
+function submitCurrent(){
+  const q=QUESTIONS[current], r=responses[current];
+  if(!answered(r)){
+    feedback("Escribe o construye una respuesta antes de comprobar.", false);
+    return;
+  }
+  if(eqAnswer(q,r)) advance();
+  else failAndRetry(q);
+}
+function goPrev(){
+  // Allow looking back only at already-completed questions; no changing completed answers.
+  if(current>0){current--; render();}
+}
+
+function render(){
+  headerUpdate();
+  const q=QUESTIONS[current];
+  const app=document.getElementById("app");
+  const isDone=completed[current];
+  app.innerHTML = `<section class="card">
+    <div class="kicker">${q.section}</div>
+    <div class="prompt"><span class="qnum">${q.n}.</span> ${fracHTML(q.prompt)}</div>
+    <div class="attempts">Intentos realizados: ${attempts[current]+1}</div>
+    <div id="feedback" class="feedback"></div>
+    <div id="interaction"></div>
+    <div class="nav">
+      <button class="btn secondary" id="prev" ${current===0?"disabled":""}>← Anterior</button>
+      <span class="help">${isDone?"Pregunta ya resuelta correctamente.":"Debes acertar para avanzar."}</span>
+    </div>
+  </section>`;
+  document.getElementById("prev").onclick=goPrev;
+  renderInteraction(q);
+}
+
+function renderInteraction(q){
+  const box=document.getElementById("interaction");
+  const r=responses[current];
+  const locked=completed[current];
+  if(locked){
+    box.innerHTML=`<div class="note">Esta pregunta ya fue resuelta correctamente.</div>`;
+    return;
+  }
+
+  if(["number","textnum"].includes(q.type)){
+    box.innerHTML=`<div class="help">Escribe tu respuesta y compruébala.</div>
+      <input class="answer-input" inputmode="decimal" autocomplete="off" placeholder="Tu respuesta" value="${r??""}">
+      <div class="check-row"><button class="btn primary" id="check">Comprobar respuesta</button></div>`;
+    const inp=box.querySelector("input");
+    inp.oninput=e=>setResp(e.target.value);
+    inp.onkeydown=e=>{if(e.key==="Enter") submitCurrent();};
+    box.querySelector("#check").onclick=submitCurrent;
+    setTimeout(()=>inp.focus(),0);
+  }
+  else if(q.type==="fraction"){
+    let a="",b=""; if(r&&String(r).includes("/")) [a,b]=String(r).split("/");
+    box.innerHTML=`<div class="help">Escribe la fracción con el numerador arriba y el denominador abajo.</div>
+      <div class="fraction-wrap"><div class="frac-inputs">
+      <input id="num" inputmode="numeric" aria-label="Numerador" value="${a}" placeholder="numerador">
+      <div class="frac-line"></div>
+      <input id="den" inputmode="numeric" aria-label="Denominador" value="${b}" placeholder="denominador">
+      </div></div>
+      <div class="check-row"><button class="btn primary" id="check">Comprobar respuesta</button></div>`;
+    const upd=()=>setResp(`${box.querySelector("#num").value}/${box.querySelector("#den").value}`);
+    box.querySelector("#num").oninput=upd; box.querySelector("#den").oninput=upd;
+    box.querySelector("#den").onkeydown=e=>{if(e.key==="Enter") submitCurrent();};
+    box.querySelector("#check").onclick=submitCurrent;
+  }
+  else if(q.type==="select"){
+    box.innerHTML=`<div class="help">Selecciona una respuesta. Si es incorrecta, los incisos cambiarán de orden.</div><div class="option-grid"></div>`;
+    const grid=box.querySelector(".option-grid");
+    optionOrders[current].forEach((o,idx)=>{
+      const b=document.createElement("button");
+      b.className="choice";
+      b.innerHTML=`<strong>${String.fromCharCode(65+idx)})</strong>&nbsp; ${fracHTML(o)}`;
+      b.onclick=()=>{
+        setResp(o);
+        if(eqAnswer(q,o)){
+          b.classList.add("correct-flash");
+          advance();
+        }else{
+          b.classList.add("wrong-flash");
+          attempts[current]++;
+          feedback(`❌ Respuesta incorrecta. Los incisos se reordenarán para volver a intentar. Intento ${attempts[current]+1}.`, false);
+          optionOrders[current]=shuffle(optionOrders[current]);
+          setTimeout(()=>renderInteraction(q),550);
+        }
+      };
+      grid.appendChild(b);
+    });
+  }
+  else if(q.type==="classify"){
+    const val = (r && typeof r==="object" && !Array.isArray(r)) ? {...r} : {};
+    box.innerHTML=`<div class="help">Toca un elemento y después toca su categoría.</div>
+      <div class="classify"><div class="items"></div><div class="buckets"></div></div>
+      <div class="check-row"><button class="btn primary" id="check">Comprobar clasificación</button></div>`;
+    const items=box.querySelector(".items"), buckets=box.querySelector(".buckets");
+    let active=null;
+    function redraw(){
+      items.innerHTML="";
+      q.options.filter(x=>!val[x]).forEach(x=>{
+        const b=document.createElement("button"); b.className="token"; b.innerHTML=fracHTML(x);
+        b.onclick=()=>{active=x; [...items.children].forEach(c=>c.classList.remove("active")); b.classList.add("active");};
+        items.appendChild(b);
+      });
+      buckets.innerHTML="";
+      q.meta.groups.forEach(g=>{
+        const d=document.createElement("div"); d.className="bucket"; d.innerHTML=`<h4>${g}</h4><div class="placed"></div>`;
+        d.onclick=()=>{if(active){val[active]=g; active=null; setResp({...val}); redraw();}};
+        const p=d.querySelector(".placed");
+        Object.keys(val).filter(k=>val[k]===g).forEach(k=>{
+          const t=document.createElement("button"); t.className="token"; t.innerHTML=fracHTML(k);
+          t.title="Toca para quitar"; t.onclick=(e)=>{e.stopPropagation(); delete val[k]; setResp({...val}); redraw();};
+          p.appendChild(t);
+        });
+        buckets.appendChild(d);
+      });
+    }
+    redraw();
+    box.querySelector("#check").onclick=submitCurrent;
+  }
+  else if(q.type==="order"){
+    let arr = Array.isArray(r)?[...r]:[];
+    const poolOrder=optionOrders[current].length?optionOrders[current]:q.options;
+    const remaining=()=>poolOrder.filter(x=>!arr.includes(x));
+    box.innerHTML=`<div class="help">Toca las tarjetas en el orden correcto. Si fallas, las tarjetas se reordenarán.</div>
+      <div class="order-zone"><div class="items" id="pool"></div><div class="order-list" id="olist"></div></div>
+      <div class="check-row"><button class="btn primary" id="check">Comprobar orden</button></div>`;
+    function redraw(){
+      const pool=box.querySelector("#pool"), ol=box.querySelector("#olist"); pool.innerHTML=""; ol.innerHTML="";
+      remaining().forEach(x=>{const b=document.createElement("button");b.className="token";b.innerHTML=fracHTML(x);b.onclick=()=>{arr.push(x);setResp([...arr]);redraw();};pool.appendChild(b);});
+      q.options.forEach((_,i)=>{const sl=document.createElement("div");sl.className="order-slot";sl.innerHTML=arr[i]?fracHTML(arr[i]):String(i+1); if(arr[i]) sl.onclick=()=>{arr.splice(i,1);setResp([...arr]);redraw();};ol.appendChild(sl);});
+    }
+    redraw();
+    box.querySelector("#check").onclick=submitCurrent;
+  }
+  else if(q.type==="match"){
+    let val=(r && typeof r==="object" && !Array.isArray(r))?{...r}:{}, active=null;
+    const rightOrder=metaRightOrders[current] || q.meta.right;
+    box.innerHTML=`<div class="help">Toca un elemento de la izquierda y después su equivalente de la derecha.</div>
+      <div class="match-grid"><div class="match-col" id="left"></div><div class="match-col" id="right"></div></div><div class="pair-list" id="pairs"></div>
+      <div class="check-row"><button class="btn primary" id="check">Comprobar relaciones</button></div>`;
+    function redraw(){
+      const L=box.querySelector("#left"),R=box.querySelector("#right"),P=box.querySelector("#pairs"); L.innerHTML="";R.innerHTML="";
+      q.meta.left.forEach(x=>{const b=document.createElement("button");b.className="match-item"+(active===x?" active":"");b.innerHTML=fracHTML(x);b.onclick=()=>{active=x;redraw();};L.appendChild(b);});
+      rightOrder.forEach(y=>{const b=document.createElement("button");b.className="match-item";b.innerHTML=fracHTML(y);b.onclick=()=>{if(active){val[active]=y;active=null;setResp({...val});redraw();}};R.appendChild(b);});
+      P.innerHTML=Object.keys(val).map(k=>`${fracHTML(k)} ↔ ${fracHTML(val[k])}`).join(" · ");
+    }
+    redraw();
+    box.querySelector("#check").onclick=submitCurrent;
+  }
+  else if(q.type==="build"){
+    const val = (r && typeof r==="object" && !Array.isArray(r)) ? {...r} : {order:[],result:""};
+    val.order=Array.isArray(val.order)?val.order:[];
+    const tokens = q.meta.tokens || [];
+    box.innerHTML=`<div class="help">Construye el procedimiento y escribe el resultado.</div>
+      <div class="build-tokens" id="bt"></div><div class="build-area" id="ba"></div>
+      <div style="margin-top:12px"><input class="answer-input" inputmode="decimal" placeholder="Resultado" value="${val.result||""}"></div>
+      <div class="check-row"><button class="btn primary" id="check">Comprobar respuesta</button></div>`;
+    const bt=box.querySelector("#bt"), ba=box.querySelector("#ba");
+    function redraw(){
+      bt.innerHTML=""; ba.innerHTML="";
+      tokens.forEach((x,idx)=>{
+        if(!val.order.includes(idx)){
+          const b=document.createElement("button");b.className="token";b.innerHTML=fracHTML(x);b.onclick=()=>{val.order.push(idx);setResp({...val});redraw();};bt.appendChild(b);
+        }
+      });
+      val.order.forEach((idx,pos)=>{const b=document.createElement("button");b.className="token";b.innerHTML=fracHTML(tokens[idx]);b.onclick=()=>{val.order.splice(pos,1);setResp({...val});redraw();};ba.appendChild(b);});
+    }
+    redraw();
+    box.querySelector("input").oninput=e=>{val.result=e.target.value;setResp({...val});};
+    box.querySelector("input").onkeydown=e=>{if(e.key==="Enter") submitCurrent();};
+    box.querySelector("#check").onclick=submitCurrent;
+  }
+}
+
+function showReport(){
+  const total=completed.filter(Boolean).length;
+  const by={};
+  QUESTIONS.forEach((q,i)=>{
+    if(!by[q.section]) by[q.section]={ok:0,n:0,attempts:0};
+    by[q.section].n++;
+    if(completed[i]) by[q.section].ok++;
+    by[q.section].attempts += attempts[i]+1;
+  });
+  document.getElementById("counter").textContent="Resultado";
+  document.getElementById("progressBar").style.width="100%";
+  const app=document.getElementById("app");
+  const totalAttempts=attempts.reduce((a,b)=>a+b,0)+100;
+  app.innerHTML=`<section class="card report">
+    <div class="kicker">Reporte final</div>
+    <h2>Examen completado</h2>
+    <div class="score">${total} / 100</div>
+    <p>Respondiste correctamente las 100 preguntas para completar el examen. Se registraron <strong>${totalAttempts}</strong> intentos en total.</p>
+    <h3>Desglose por área</h3>
+    <div id="domains"></div>
+    <div class="nav"><button class="btn primary" id="restart">Reiniciar examen</button></div>
+  </section>`;
+  const d=app.querySelector("#domains");
+  Object.entries(by).forEach(([k,v])=>{
+    const row=document.createElement("div");row.className="domain";
+    row.innerHTML=`<span>${k}</span><strong>${v.ok}/${v.n} · ${v.attempts} intentos</strong>`;
+    d.appendChild(row);
+  });
+  app.querySelector("#restart").onclick=()=>{if(confirm("¿Deseas borrar todos los avances y reiniciar?")) location.reload();};
+}
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>50 Retos de Matemáticas | Decenas, Unidades, Sumas y Restas</title>
+<style>
+  :root{
+    --bg:#f4fbfa; --card:#ffffff; --ink:#243447; --muted:#60758a;
+    --blue:#2f5da8; --blue2:#74a7e8; --red:#d95d5d; --red2:#f4a6a6;
+    --green:#2f9e6f; --amber:#d99b2b; --line:#cfe7e3;
+    --teal:#2a8c82; --yellow:#f6c85f; --soft:#eef8f6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#eaf7f5 0,#ffffff 42%,#fff8e8 100%);color:var(--ink)}
+  .wrap{max-width:900px;margin:auto;padding:18px}
+  header{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:20px;box-shadow:0 10px 30px rgba(42,140,130,.10);position:sticky;top:8px;z-index:4}
+  h1{margin:0 0 8px;font-size:clamp(1.5rem,4vw,2.3rem)}
+  .sub{color:var(--muted);margin-bottom:14px}
+  .progress{height:14px;background:#e5e7eb;border-radius:999px;overflow:hidden}
+  .bar{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--teal),var(--green));transition:.3s}
+  .meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:.95rem}
+  .pill{background:#eef7ff;padding:7px 10px;border-radius:999px}
+  main{margin-top:18px}
+  .card{background:#fff;border:2px solid #e5e7eb;border-radius:24px;padding:22px;box-shadow:0 12px 35px rgba(36,52,71,.08);min-height:440px}
+  .qnum{font-weight:800;color:var(--blue);margin-bottom:8px}
+  .prompt{font-size:clamp(1.2rem,3vw,1.7rem);font-weight:800;margin:6px 0 18px}
+  .hint{background:#f8fafc;border-left:5px solid var(--teal);padding:12px 14px;border-radius:10px;margin-bottom:16px;color:#334155}
+  .answers{display:grid;gap:12px}
+  button.option,.primary,.secondary{border:0;border-radius:16px;padding:14px 16px;font-size:1rem;font-weight:750;cursor:pointer;transition:.15s}
+  button.option{background:#eef6ff;border:2px solid #bfd7f2;text-align:left;color:#274b7a}
+  button.option:hover{transform:translateY(-1px);background:#dcecff}
+  .primary{background:var(--blue);color:white}
+  .secondary{background:#e2e8f0;color:#0f172a}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  input[type=number], input[type=text]{width:min(100%,280px);font-size:1.25rem;padding:13px 14px;border-radius:14px;border:2px solid #cbd5e1;outline:none}
+  input:focus{border-color:var(--blue)}
+  .feedback{margin-top:16px;padding:14px;border-radius:14px;font-weight:700;display:none}
+  .ok{display:block;background:#dcfce7;color:#166534;border:2px solid #86efac}
+  .bad{display:block;background:#fee2e2;color:#991b1b;border:2px solid #fecaca}
+  .tokens{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px;min-height:42px}
+  .token{width:26px;height:26px;border-radius:50%;display:inline-grid;place-items:center;color:white;font-size:.75rem;font-weight:900;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
+  .red{background:var(--red)} .blue{background:#3d9ed8}
+  .placegrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px}
+  .place{border:2px dashed #94a3b8;border-radius:16px;padding:16px;text-align:center;background:#f8fafc}
+  .big{font-size:2.2rem;font-weight:900}
+  .vertical{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:2rem;display:inline-block;text-align:right;line-height:1.2;padding:14px 24px;border-radius:16px;background:#f8fafc;border:2px solid #e2e8f0}
+  .vertical .line{border-top:3px solid #334155;padding-top:4px}
+  .order{display:flex;gap:10px;flex-wrap:wrap}
+  .chip{background:#fff7ed;border:2px solid #fed7aa;color:#9a3412;padding:12px 14px;border-radius:14px;font-weight:800;cursor:pointer}
+  .selected{outline:4px solid #22c55e}
+  .result{display:none;text-align:center}
+  .result.show{display:block}
+  .score{font-size:4rem;font-weight:900;color:var(--blue)}
+  .author-footer{margin-top:24px;background:linear-gradient(135deg,#244f86 0%,#2a8c82 100%);color:#fff;border-radius:22px 22px 0 0;padding:28px 18px 24px;box-shadow:0 -8px 24px rgba(36,79,134,.10)}
+  .author-footer__inner{max-width:900px;margin:0 auto;text-align:center}
+  .author-footer__label{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800;opacity:.82;margin-bottom:6px}
+  .author-footer__name{margin:0;font-size:clamp(1.2rem,3vw,1.55rem);font-weight:900}
+  .author-footer__desc{max-width:760px;margin:10px auto 0;line-height:1.6;color:#eefbf8}
+  .author-footer__quote{margin:10px auto 0;font-size:.92rem;font-style:italic;opacity:.9}
+  .author-footer__button{display:inline-block;margin-top:16px;background:#fff;color:#244f86;text-decoration:none;font-weight:800;padding:11px 18px;border-radius:999px;border:2px solid rgba(255,255,255,.72);transition:transform .15s ease,box-shadow .15s ease}
+  .author-footer__button:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.14)}
+  .author-footer__source{margin-top:16px;font-size:.82rem;opacity:.82}
+  .author-footer__copy{margin-top:8px;font-size:.84rem;opacity:.88}
+  @media (max-width:600px){.author-footer{padding:24px 16px 22px}.author-footer__desc{font-size:.93rem}.author-footer__button{width:100%;max-width:280px}}
+  .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:99}
+  .confetti i{position:absolute;width:9px;height:14px;top:-20px;background:hsl(var(--h),80%,55%);animation:fall 1.1s linear forwards;transform:rotate(var(--r))}
+  @keyframes fall{to{transform:translate(var(--x),105vh) rotate(540deg);opacity:.2}}
+  @media(max-width:600px){header{position:static}.card{padding:17px;min-height:0}.vertical{font-size:1.7rem}.placegrid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>🎯 50 Retos de Matemáticas</h1>
+  <div class="sub">Decenas y unidades · números del 1 al 100 · sumas · restas · representación con fichas</div>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <div class="meta">
+    <span class="pill">Pregunta <b id="pos">1</b>/50</span>
+    <span class="pill">Aciertos: <b id="hits">0</b></span>
+    <span class="pill">Intentos: <b id="tries">0</b></span>
+  </div>
+</header>
+<main>
+  <section class="card" id="quizCard">
+    <div class="qnum" id="sectionLabel"></div>
+    <div class="prompt" id="prompt"></div>
+    <div id="interactive"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="actions" id="actions"></div>
+  </section>
+  <section class="card result" id="resultCard">
+    <h2>🏁 Actividad terminada</h2>
+    <div class="score" id="finalScore"></div>
+    <p id="finalText"></p>
+    <button class="primary" onclick="restart()">Volver a empezar</button>
+  </section>
+</main>
+<footer class="author-footer" aria-label="Información del autor">
+  <div class="author-footer__inner">
+    <div class="author-footer__label">Autor</div>
+    <h2 class="author-footer__name">Luis Alberto Antonio Narciso</h2>
+    <p class="author-footer__desc">Ingeniero en Electrónica y profesional de Quality Assurance, automatización de pruebas y tecnología educativa. Desarrolla experiencias web interactivas orientadas al aprendizaje, combinando educación, tecnología, diseño y herramientas digitales.</p>
+    <p class="author-footer__quote">“Recurso diseñado y desarrollado por Luis Alberto Antonio Narciso”.</p>
+    <a class="author-footer__button" href="https://narciso1516.github.io/narcisotesting.com/" target="_blank" rel="noopener noreferrer">Conocer al autor</a>
+    <div class="author-footer__source">Actividad interactiva basada en ejercicios de numeración, decenas, unidades, sumas y restas.</div>
+    <div class="author-footer__copy">© 2026 Luis Alberto Antonio Narciso</div>
+  </div>
+</footer>
+</div>
+<div class="confetti" id="confetti"></div>
+<script>
+const Q=[];
+function mc(section,prompt,opts,ans,hint=''){Q.push({type:'mc',section,prompt,opts,ans,hint})}
+function num(section,prompt,ans,hint=''){Q.push({type:'num',section,prompt,ans,hint})}
+function tokens(section,n,redCount,blueCount,ans){Q.push({type:'tokens',section,prompt:`Observa las fichas. Cada ficha roja vale 10 y cada ficha azul vale 1. ¿Qué número representan?`,redCount,blueCount,ans})}
+function vertical(section,a,op,b,ans){Q.push({type:'vertical',section,prompt:'Resuelve la operación:',a,op,b,ans})}
+function order(section,values,ans){Q.push({type:'order',section,prompt:'Ordena los números de menor a mayor:',values,ans})}
+
+// 1–10 Numeración
+mc('Nivel 1 · Números del 1 al 100','¿Qué número viene después de 39?',['38','40','49','41'],'40');
+mc('Nivel 1 · Números del 1 al 100','¿Qué número está entre 56 y 58?',['55','57','59','66'],'57');
+num('Nivel 1 · Números del 1 al 100','Escribe con número: setenta y dos.',72);
+num('Nivel 1 · Números del 1 al 100','Escribe con número: cuarenta y nueve.',49);
+mc('Nivel 1 · Números del 1 al 100','¿Cuál es el número mayor?',['68','86','78','66'],'86');
+mc('Nivel 1 · Números del 1 al 100','¿Cuál es el número menor?',['31','13','23','41'],'13');
+num('Nivel 1 · Números del 1 al 100','Completa la serie: 20, 30, 40, 50, __',60);
+num('Nivel 1 · Números del 1 al 100','Completa la serie: 91, 92, 93, __, 95',94);
+order('Nivel 1 · Números del 1 al 100',[42,18,35],[18,35,42]);
+order('Nivel 1 · Números del 1 al 100',[77,71,79],[71,77,79]);
+
+// 11–20 Decenas y unidades
+mc('Nivel 2 · Decenas y unidades','¿Cuántas decenas tiene 64?',['4','6','64','10'],'6');
+mc('Nivel 2 · Decenas y unidades','¿Cuántas unidades tiene 64?',['6','4','60','14'],'4');
+mc('Nivel 2 · Decenas y unidades','7 decenas y 5 unidades forman…',['57','75','705','12'],'75');
+mc('Nivel 2 · Decenas y unidades','3 decenas y 2 unidades forman…',['23','32','302','5'],'32');
+num('Nivel 2 · Decenas y unidades','¿Cuánto valen 8 decenas?',80);
+num('Nivel 2 · Decenas y unidades','¿Cuánto valen 9 unidades?',9);
+tokens('Nivel 2 · Decenas y unidades',1,5,3,53);
+tokens('Nivel 2 · Decenas y unidades',2,2,4,24);
+tokens('Nivel 2 · Decenas y unidades',3,7,1,71);
+tokens('Nivel 2 · Decenas y unidades',4,4,8,48);
+
+// 21–30 Fichas y valor posicional
+mc('Nivel 3 · Fichas de colores','Si hay 6 fichas rojas y 6 azules, ¿qué número se forma?',['12','66','60','606'],'66');
+mc('Nivel 3 · Fichas de colores','Si hay 2 fichas rojas y 9 azules, ¿qué número se forma?',['29','92','11','209'],'29');
+tokens('Nivel 3 · Fichas de colores',5,8,5,85);
+tokens('Nivel 3 · Fichas de colores',6,3,7,37);
+tokens('Nivel 3 · Fichas de colores',7,9,0,90);
+mc('Nivel 3 · Fichas de colores','¿Qué representa el 5 en el número 54?',['5 unidades','5 decenas','50 unidades solamente','4 decenas'],'5 decenas');
+mc('Nivel 3 · Fichas de colores','¿Qué representa el 8 en el número 28?',['8 unidades','8 decenas','80 unidades','2 unidades'],'8 unidades');
+num('Nivel 3 · Fichas de colores','Descompón 43: 40 + __',3);
+num('Nivel 3 · Fichas de colores','Descompón 76: __ + 6',70);
+mc('Nivel 3 · Fichas de colores','¿Cuál descomposición es correcta para 91?',['90 + 1','9 + 1','80 + 11','91 + 1'],'90 + 1');
+
+// 31–40 Sumas
+vertical('Nivel 4 · Sumas',46,'+',28,74);
+vertical('Nivel 4 · Sumas',32,'+',27,59);
+vertical('Nivel 4 · Sumas',62,'+',34,96);
+vertical('Nivel 4 · Sumas',89,'+',15,104);
+vertical('Nivel 4 · Sumas',21,'+',18,39);
+vertical('Nivel 4 · Sumas',37,'+',42,79);
+vertical('Nivel 4 · Sumas',55,'+',24,79);
+vertical('Nivel 4 · Sumas',68,'+',17,85);
+vertical('Nivel 4 · Sumas',43,'+',39,82);
+vertical('Nivel 4 · Sumas',76,'+',18,94);
+
+// 41–50 Restas
+vertical('Nivel 5 · Restas',73,'−',21,52);
+vertical('Nivel 5 · Restas',68,'−',25,43);
+vertical('Nivel 5 · Restas',94,'−',32,62);
+vertical('Nivel 5 · Restas',81,'−',17,64);
+vertical('Nivel 5 · Restas',57,'−',26,31);
+vertical('Nivel 5 · Restas',70,'−',18,52);
+vertical('Nivel 5 · Restas',65,'−',29,36);
+vertical('Nivel 5 · Restas',92,'−',48,44);
+vertical('Nivel 5 · Restas',84,'−',37,47);
+vertical('Nivel 5 · Restas',100,'−',56,44);
+
+let i=0,hits=0,tries=0,answered=false,orderPick=[];
+const $=id=>document.getElementById(id);
+function render(){
+  answered=false; orderPick=[];
+  const q=Q[i]; $('pos').textContent=i+1; $('hits').textContent=hits; $('tries').textContent=tries; $('bar').style.width=(i/50*100)+'%';
+  $('sectionLabel').textContent=q.section; $('prompt').textContent=q.prompt; $('feedback').className='feedback'; $('feedback').textContent=''; $('actions').innerHTML='';
+  const box=$('interactive'); box.innerHTML='';
+  if(q.hint){const h=document.createElement('div');h.className='hint';h.textContent=q.hint;box.appendChild(h)}
+  if(q.type==='mc'){
+    const a=document.createElement('div');a.className='answers';
+    q.opts.forEach(v=>{const b=document.createElement('button');b.className='option';b.textContent=v;b.onclick=()=>check(String(v));a.appendChild(b)});box.appendChild(a);
+  }
+  if(q.type==='num') makeInput(box,q.ans);
+  if(q.type==='tokens'){
+    const t=document.createElement('div');t.className='tokens';
+    for(let r=0;r<q.redCount;r++){const e=document.createElement('span');e.className='token red';e.textContent='10';t.appendChild(e)}
+    for(let b=0;b<q.blueCount;b++){const e=document.createElement('span');e.className='token blue';e.textContent='1';t.appendChild(e)}
+    box.appendChild(t); makeInput(box,q.ans);
+  }
+  if(q.type==='vertical'){
+    const v=document.createElement('div');v.className='vertical';v.innerHTML=`<div>${q.a}</div><div>${q.op} ${q.b}</div><div class="line">?</div>`;box.appendChild(v); box.appendChild(document.createElement('br')); box.appendChild(document.createElement('br')); makeInput(box,q.ans);
+  }
+  if(q.type==='order'){
+    const o=document.createElement('div');o.className='order';
+    q.values.forEach(v=>{const b=document.createElement('button');b.className='chip';b.textContent=v;b.onclick=()=>{if(answered)return;b.classList.add('selected');b.disabled=true;orderPick.push(v);if(orderPick.length===q.values.length)check(JSON.stringify(orderPick));};o.appendChild(b)});box.appendChild(o);
+  }
+}
+function makeInput(box,ans){
+  const input=document.createElement('input'); input.type='number'; input.inputMode='numeric'; input.placeholder='Escribe tu respuesta'; box.appendChild(input);
+  const btn=document.createElement('button');btn.className='primary';btn.textContent='Comprobar';btn.onclick=()=>check(input.value);$('actions').appendChild(btn);
+  input.addEventListener('keydown',e=>{if(e.key==='Enter')check(input.value)}); setTimeout(()=>input.focus(),50);
+}
+function check(value){
+  if(answered)return; const q=Q[i]; tries++; $('tries').textContent=tries;
+  let ok=false;
+  if(q.type==='order') ok=value===JSON.stringify(q.ans);
+  else ok=String(value).trim().toLowerCase()===String(q.ans).trim().toLowerCase();
+  if(ok){answered=true;hits++;$('hits').textContent=hits;$('feedback').className='feedback ok';$('feedback').textContent='✅ ¡Correcto! Muy bien.';burst();
+    const n=document.createElement('button');n.className='primary';n.textContent=i===49?'Ver resultado':'Siguiente pregunta';n.onclick=next;$('actions').innerHTML='';$('actions').appendChild(n);setTimeout(()=>{if(i<49)next();},900);
+  } else {
+    $('feedback').className='feedback bad';$('feedback').textContent='❌ Aún no. Revisa decenas, unidades o la operación e inténtalo otra vez.';
+    if(q.type==='order') setTimeout(render,700);
+  }
+}
+function next(){if(!answered)return;i++;if(i>=Q.length)return finish();render()}
+function finish(){
+  $('quizCard').style.display='none';$('resultCard').classList.add('show');$('bar').style.width='100%';
+  $('finalScore').textContent=`${hits}/50`; const pct=Math.round(hits/50*100);
+  $('finalText').textContent=`Aciertos: ${hits} de 50 · Intentos totales: ${tries} · Resultado: ${pct}%`;
+}
+function restart(){i=0;hits=0;tries=0;$('quizCard').style.display='block';$('resultCard').classList.remove('show');render()}
+function burst(){const c=$('confetti');for(let k=0;k<24;k++){const e=document.createElement('i');e.style.left=(45+Math.random()*10)+'vw';e.style.setProperty('--h',Math.floor(Math.random()*360));e.style.setProperty('--x',(Math.random()*500-250)+'px');e.style.setProperty('--r',(Math.random()*180)+'deg');e.style.animationDelay=(Math.random()*.12)+'s';c.appendChild(e);setTimeout(()=>e.remove(),1400)}}
+render();
+</script>
+</body>
+</html>

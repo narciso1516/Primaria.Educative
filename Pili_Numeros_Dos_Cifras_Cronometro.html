@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pili | ¿Qué número es?</title>
+<style>
+:root{
+  --bg:#FFF8EE;
+  --card:#FFFFFF;
+  --ink:#25324A;
+  --muted:#687386;
+  --purple:#7557D9;
+  --purple-soft:#EEE9FF;
+  --yellow:#FFD766;
+  --green:#3CBF8A;
+  --green-soft:#E8FAF2;
+  --red:#E85C66;
+  --red-soft:#FFF0F1;
+  --blue:#6CC5E8;
+  --border:#E7DFD6;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:ui-rounded,"Arial Rounded MT Bold",Nunito,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 10% 10%,#FFF0B8 0 70px,transparent 72px),
+    radial-gradient(circle at 92% 18%,#E8E0FF 0 85px,transparent 87px),
+    var(--bg);
+}
+button{font:inherit}
+.app{
+  width:min(860px,calc(100% - 24px));
+  margin:0 auto;
+  padding:22px 0 34px;
+}
+.topbar{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:14px;
+  align-items:center;
+  background:rgba(255,255,255,.92);
+  border:2px solid var(--border);
+  border-radius:28px;
+  padding:18px;
+}
+.eyebrow{margin:0 0 4px;color:var(--purple);font-weight:900;font-size:.9rem}
+h1{margin:0;font-size:clamp(1.55rem,5vw,2.3rem);line-height:1.05}
+.timer{
+  min-width:130px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:12px 15px;
+  border-radius:999px;
+  background:var(--purple-soft);
+  font-weight:900;
+  font-size:1.2rem;
+}
+.dot{
+  width:12px;height:12px;border-radius:50%;background:var(--red);
+  animation:pulse 1.2s infinite;
+}
+@keyframes pulse{50%{transform:scale(.75);opacity:.55}}
+.progress-wrap{margin:16px 0 0}
+.progress-track{height:14px;border-radius:999px;background:#EFE9E1;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--purple));transition:width .3s ease}
+.stats{display:flex;justify-content:space-between;gap:14px;margin-top:8px;color:var(--muted);font-size:.95rem;font-weight:800}
+.game-card{
+  margin-top:18px;
+  background:var(--card);
+  border:2px solid var(--border);
+  border-radius:34px;
+  padding:clamp(24px,6vw,50px);
+  text-align:center;
+  box-shadow:0 14px 35px rgba(62,51,40,.08);
+}
+.instruction{margin:0;color:var(--muted);font-weight:800;font-size:1.02rem}
+.word{
+  margin:22px auto 12px;
+  font-size:clamp(2.3rem,9vw,5rem);
+  line-height:1;
+  font-weight:1000;
+  letter-spacing:-.04em;
+  overflow-wrap:anywhere;
+}
+.question{margin:0 0 22px;color:var(--muted);font-size:1.05rem;font-weight:800}
+.options{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+}
+.option{
+  min-height:118px;
+  border:4px solid #E9E4DF;
+  border-radius:30px;
+  background:#FFFEFC;
+  color:var(--ink);
+  font-size:clamp(3rem,12vw,6rem);
+  line-height:1;
+  font-weight:1000;
+  cursor:pointer;
+  transition:transform .15s ease,border-color .15s ease,background .15s ease;
+  touch-action:manipulation;
+}
+.option:hover{transform:translateY(-2px);border-color:#C8BBEF}
+.option:active{transform:scale(.97)}
+.option:focus-visible,.restart:focus-visible{outline:5px solid rgba(117,87,217,.25);outline-offset:3px}
+.option.correct{border-color:var(--green);background:var(--green-soft);color:#187553}
+.option.wrong{border-color:var(--red);background:var(--red-soft);color:#A93540}
+.option:disabled{cursor:default}
+.feedback{
+  min-height:34px;
+  margin:22px 0 0;
+  font-size:clamp(1.05rem,4vw,1.35rem);
+  font-weight:900;
+}
+.tip{
+  margin:14px 0 0;
+  padding:13px 16px;
+  border-radius:20px;
+  background:#FFF4CF;
+  color:#735C13;
+  font-size:.94rem;
+  font-weight:800;
+}
+.actions{display:flex;justify-content:center;margin-top:18px}
+.restart{
+  min-height:50px;
+  border:0;
+  border-radius:999px;
+  padding:0 24px;
+  background:var(--purple);
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+}
+.restart:hover{filter:brightness(.96)}
+footer{text-align:center;margin-top:20px;color:var(--muted);font-size:.82rem;font-weight:700}
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.piece{
+  position:absolute;
+  top:-20px;
+  width:10px;height:16px;border-radius:3px;
+  animation:fall 1.8s linear forwards;
+}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.2}}
+@media(max-width:520px){
+  .topbar{grid-template-columns:1fr}
+  .timer{justify-self:start}
+  .game-card{border-radius:26px;padding:25px 16px}
+  .options{gap:10px}
+  .option{min-height:102px;border-radius:24px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <section class="topbar">
+    <div>
+      <p class="eyebrow">ACTIVIDAD DE NÚMEROS • 7 AÑOS</p>
+      <h1>¡Hola, Pili! 🌟 ¿Qué número es?</h1>
+    </div>
+    <div class="timer" aria-label="Cronómetro">
+      <span class="dot" aria-hidden="true"></span>
+      <span id="timer">00:00</span>
+    </div>
+  </section>
+
+  <div class="progress-wrap">
+    <div class="progress-track" aria-label="Progreso de la actividad">
+      <div id="progressBar" class="progress-bar"></div>
+    </div>
+    <div class="stats">
+      <span>Pregunta <strong id="questionNumber">1</strong> de <strong id="totalQuestions">15</strong></span>
+      <span>⭐ Aciertos: <strong id="score">0</strong></span>
+    </div>
+  </div>
+
+  <section class="game-card">
+    <p class="instruction">Lee el nombre del número:</p>
+    <div id="word" class="word" aria-live="polite">Cuarenta y dos</div>
+    <p class="question">¿Cuál de estas dos opciones es correcta?</p>
+
+    <div class="options">
+      <button class="option" type="button" data-index="0" aria-label="Opción 1">42</button>
+      <button class="option" type="button" data-index="1" aria-label="Opción 2">24</button>
+    </div>
+
+    <div id="feedback" class="feedback" aria-live="assertive">Toca una opción 👆</div>
+    <div class="tip">💡 Si te equivocas, no pasa nada. Lee otra vez y vuelve a intentarlo.</div>
+  </section>
+
+  <div class="actions">
+    <button id="restart" class="restart" type="button">↻ Reiniciar actividad</button>
+  </div>
+
+  <footer>AUTOR: Luis Alberto Antonio Narciso</footer>
+</main>
+
+<div id="confetti" class="confetti" aria-hidden="true"></div>
+
+<script>
+(() => {
+  const TOTAL = 15;
+  const units = ["","uno","dos","tres","cuatro","cinco","seis","siete","ocho","nueve"];
+  const special = {
+    10:"diez",11:"once",12:"doce",13:"trece",14:"catorce",15:"quince",
+    16:"dieciséis",17:"diecisiete",18:"dieciocho",19:"diecinueve",
+    20:"veinte",21:"veintiuno",22:"veintidós",23:"veintitrés",24:"veinticuatro",
+    25:"veinticinco",26:"veintiséis",27:"veintisiete",28:"veintiocho",29:"veintinueve"
+  };
+  const tens = {30:"treinta",40:"cuarenta",50:"cincuenta",60:"sesenta",70:"setenta",80:"ochenta",90:"noventa"};
+
+  const wordEl = document.getElementById("word");
+  const timerEl = document.getElementById("timer");
+  const questionNumberEl = document.getElementById("questionNumber");
+  const totalQuestionsEl = document.getElementById("totalQuestions");
+  const scoreEl = document.getElementById("score");
+  const progressBar = document.getElementById("progressBar");
+  const feedbackEl = document.getElementById("feedback");
+  const buttons = [...document.querySelectorAll(".option")];
+  const restartBtn = document.getElementById("restart");
+  const confettiEl = document.getElementById("confetti");
+
+  let questions = [];
+  let current = 0;
+  let score = 0;
+  let startTime = Date.now();
+  let timerId = null;
+  let locked = false;
+
+  totalQuestionsEl.textContent = TOTAL;
+
+  function numberToWords(n){
+    if(special[n]) return special[n];
+    const ten = Math.floor(n / 10) * 10;
+    const unit = n % 10;
+    return unit === 0 ? tens[ten] : tens[ten] + " y " + units[unit];
+  }
+
+  function capitalize(text){
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  }
+
+  function shuffle(array){
+    const a = [...array];
+    for(let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function distractorFor(n){
+    const reversed = Number(String(n).split("").reverse().join(""));
+    if(reversed >= 10 && reversed <= 99 && reversed !== n) return reversed;
+
+    const sameTen = Math.floor(n / 10) * 10 + ((n % 10 + 3) % 10);
+    if(sameTen >= 10 && sameTen <= 99 && sameTen !== n) return sameTen;
+
+    let candidate;
+    do {
+      candidate = Math.floor(Math.random() * 90) + 10;
+    } while(candidate === n);
+    return candidate;
+  }
+
+  function buildQuestions(){
+    const pool = shuffle(Array.from({length:90},(_,i) => i + 10));
+    return pool.slice(0,TOTAL).map(n => ({
+      number:n,
+      word:capitalize(numberToWords(n)),
+      options:shuffle([n,distractorFor(n)])
+    }));
+  }
+
+  function updateTimer(){
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const minutes = String(Math.floor(elapsed / 60)).padStart(2,"0");
+    const seconds = String(elapsed % 60).padStart(2,"0");
+    timerEl.textContent = minutes + ":" + seconds;
+  }
+
+  function render(){
+    locked = false;
+    const q = questions[current];
+
+    questionNumberEl.textContent = current + 1;
+    scoreEl.textContent = score;
+    progressBar.style.width = (current / TOTAL * 100) + "%";
+    wordEl.textContent = q.word;
+    feedbackEl.textContent = "Toca una opción 👆";
+
+    buttons.forEach((button,index) => {
+      button.textContent = q.options[index];
+      button.dataset.value = q.options[index];
+      button.disabled = false;
+      button.classList.remove("correct","wrong");
+    });
+  }
+
+  function celebrate(){
+    if(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const colors = ["#7557D9","#FFD766","#3CBF8A","#6CC5E8","#E85C66"];
+    for(let i=0;i<45;i++){
+      const piece = document.createElement("span");
+      piece.className = "piece";
+      piece.style.left = Math.random() * 100 + "%";
+      piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+      piece.style.animationDelay = (Math.random()*.45) + "s";
+      piece.style.transform = "rotate(" + (Math.random()*360) + "deg)";
+      confettiEl.appendChild(piece);
+      setTimeout(() => piece.remove(),2300);
+    }
+  }
+
+  function finish(){
+    clearInterval(timerId);
+    timerId = null;
+    progressBar.style.width = "100%";
+    wordEl.textContent = "¡Lo lograste, Pili! 🎉";
+    feedbackEl.textContent = "Terminaste " + TOTAL + " retos. Aciertos: " + score + ". Tiempo: " + timerEl.textContent + " ⭐";
+    buttons.forEach(button => {
+      button.disabled = true;
+      button.textContent = "★";
+      button.classList.remove("wrong");
+    });
+    questionNumberEl.textContent = TOTAL;
+    celebrate();
+  }
+
+  function selectAnswer(button){
+    if(locked) return;
+    const q = questions[current];
+    const chosen = Number(button.dataset.value);
+
+    if(chosen === q.number){
+      locked = true;
+      score++;
+      scoreEl.textContent = score;
+      button.classList.add("correct");
+      feedbackEl.textContent = "¡Correcto, Pili! 🌟 " + q.word + " es " + q.number + ".";
+      buttons.forEach(b => b.disabled = true);
+
+      setTimeout(() => {
+        current++;
+        if(current >= TOTAL) finish();
+        else render();
+      },850);
+    }else{
+      button.classList.add("wrong");
+      feedbackEl.textContent = "Casi 😊. Lee de nuevo y prueba la otra opción.";
+      setTimeout(() => button.classList.remove("wrong"),650);
+    }
+  }
+
+  function restart(){
+    if(timerId) clearInterval(timerId);
+    questions = buildQuestions();
+    current = 0;
+    score = 0;
+    locked = false;
+    startTime = Date.now();
+    timerEl.textContent = "00:00";
+    timerId = setInterval(updateTimer,1000);
+    render();
+  }
+
+  buttons.forEach(button => button.addEventListener("click",() => selectAnswer(button)));
+  restartBtn.addEventListener("click",restart);
+
+  restart();
+})();
+</script>
+</body>
+</html>

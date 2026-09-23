@@ -196,8 +196,8 @@ footer{text-align:center;margin-top:20px;color:var(--muted);font-size:.82rem;fon
 <main class="app">
   <section class="header">
     <div>
-      <p class="eyebrow">NIVEL 2 • NÚMEROS DE DOS CIFRAS</p>
-      <h1>⚡ Pili: reto rápido de números</h1>
+      <p class="eyebrow">NIVEL 3 • NÚMEROS DE DOS CIFRAS</p>
+      <h1>⚡ Pili: reto rápido — nivel difícil</h1>
     </div>
     <div class="total-time">
       <small>TIEMPO TOTAL</small>
@@ -213,7 +213,7 @@ footer{text-align:center;margin-top:20px;color:var(--muted);font-size:.82rem;fon
 
   <section class="game">
     <div class="countdown-wrap" aria-label="Tiempo restante para responder">
-      <div id="countNumber" class="count-number">5</div>
+      <div id="countNumber" class="count-number">5.0 s</div>
       <div class="time-track"><div id="timeBar" class="time-bar"></div></div>
       <div class="count-label">5 segundos por reto</div>
     </div>
@@ -229,12 +229,12 @@ footer{text-align:center;margin-top:20px;color:var(--muted);font-size:.82rem;fon
     </div>
 
     <div id="feedback" class="feedback" aria-live="assertive">¡Tienes 5 segundos! ⏱️</div>
-    <div class="rule">🎯 Una sola oportunidad por pregunta: si eliges mal o se acaba el tiempo, se marca error y avanzamos.</div>
+    <div class="rule">🎯 Nivel difícil: tres opciones muy parecidas, una sola oportunidad y 5 segundos por ejercicio.</div>
   </section>
 
   <div class="status-row" style="margin-top:14px">
     <div class="badge" style="grid-column:1/-1;text-align:center">
-      Pregunta <strong id="questionNumber">1</strong> de <strong id="totalQuestions">15</strong>
+      Pregunta <strong id="questionNumber">1</strong> de <strong id="totalQuestions">20</strong>
     </div>
   </div>
 
@@ -249,7 +249,7 @@ footer{text-align:center;margin-top:20px;color:var(--muted);font-size:.82rem;fon
 
 <script>
 (() => {
-  const TOTAL = 15;
+  const TOTAL = 20;
   const LIMIT_MS = 5000;
 
   const units = ["","uno","dos","tres","cuatro","cinco","seis","siete","ocho","nueve"];
@@ -314,29 +314,29 @@ footer{text-align:center;margin-top:20px;color:var(--muted);font-size:.82rem;fon
 
   function makeOptions(n){
     const candidates = [n];
+    const tensDigit = Math.floor(n/10);
+    const unitDigit = n%10;
     const reversed = Number(String(n).split("").reverse().join(""));
+
+    // Distractores deliberadamente parecidos: inversión, vecino y misma unidad.
+    const hardPool = shuffle([
+      reversed,
+      n-1, n+1,
+      n-2, n+2,
+      (tensDigit*10)+((unitDigit+1)%10),
+      (tensDigit*10)+((unitDigit+9)%10),
+      ((tensDigit===9?8:tensDigit+1)*10)+unitDigit,
+      ((tensDigit===1?2:tensDigit-1)*10)+unitDigit,
+      n-10, n+10
+    ]);
+
+    // La inversión de cifras tiene prioridad cuando sigue siendo un número de dos cifras.
     if(validCandidate(reversed,candidates)) candidates.push(reversed);
 
-    const ten = Math.floor(n/10)*10;
-    const unit = n%10;
-
-    const nearbyUnits = shuffle([1,2,3,4,5,6,7,8,9,0]);
-    for(const u of nearbyUnits){
-      const candidate = ten + u;
+    for(const candidate of hardPool){
       if(validCandidate(candidate,candidates)){
         candidates.push(candidate);
         if(candidates.length === 3) break;
-      }
-    }
-
-    if(candidates.length < 3){
-      const nearbyTens = shuffle([10,20,30,40,50,60,70,80,90]);
-      for(const t of nearbyTens){
-        const candidate = t + unit;
-        if(validCandidate(candidate,candidates)){
-          candidates.push(candidate);
-          if(candidates.length === 3) break;
-        }
       }
     }
 
@@ -376,8 +376,7 @@ footer{text-align:center;margin-top:20px;color:var(--muted);font-size:.82rem;fon
     if(locked) return;
     const elapsed = Date.now()-questionStart;
     const remaining = Math.max(0,LIMIT_MS-elapsed);
-    const remainingSeconds = Math.ceil(remaining/1000);
-    countNumberEl.textContent = String(remainingSeconds);
+    countNumberEl.textContent = (remaining/1000).toFixed(1) + " s";
     timeBarEl.style.width = (remaining/LIMIT_MS*100) + "%";
 
     if(remaining <= 0){
@@ -387,7 +386,7 @@ footer{text-align:center;margin-top:20px;color:var(--muted);font-size:.82rem;fon
 
   function startQuestionTimer(){
     questionStart = Date.now();
-    countNumberEl.textContent = "5";
+    countNumberEl.textContent = "5.0 s";
     timeBarEl.style.width = "100%";
     countdownId = setInterval(updateCountdown,50);
   }
@@ -460,7 +459,7 @@ footer{text-align:center;margin-top:20px;color:var(--muted);font-size:.82rem;fon
     if(countdownId){clearInterval(countdownId);countdownId=null}
     errors++;
     errorsEl.textContent = String(errors);
-    countNumberEl.textContent = "0";
+    countNumberEl.textContent = "0.0 s";
     timeBarEl.style.width = "0%";
     buttons.forEach(b=>b.disabled=true);
     revealCorrect();
